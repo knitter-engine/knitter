@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.5.33516.290
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter", "src\Knitter\Knitter.csproj", "{205B933A-D154-45AD-901D-576780995EDC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{69EF635F-23C7-49E1-9F4E-748A96845961}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{49ABF7E3-C0A4-43C2-8E11-A7DA73E21AB2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Base", "examples\Base\Base.csproj", "{1F07B4D2-9344-4090-BFEF-EA4BDE406989}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{205B933A-D154-45AD-901D-576780995EDC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{205B933A-D154-45AD-901D-576780995EDC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{205B933A-D154-45AD-901D-576780995EDC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{205B933A-D154-45AD-901D-576780995EDC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1F07B4D2-9344-4090-BFEF-EA4BDE406989}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1F07B4D2-9344-4090-BFEF-EA4BDE406989}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1F07B4D2-9344-4090-BFEF-EA4BDE406989}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1F07B4D2-9344-4090-BFEF-EA4BDE406989}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1F07B4D2-9344-4090-BFEF-EA4BDE406989} = {69EF635F-23C7-49E1-9F4E-748A96845961}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A417F4DC-30B7-4410-A3E1-1ABD157CBDFB}
+	EndGlobalSection
+EndGlobal
