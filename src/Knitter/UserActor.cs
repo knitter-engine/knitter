@@ -2,7 +2,7 @@
 
 namespace Knitter
 {
-    public class Actor
+    public class UserActor
     {
         public virtual void OnCreate() { }
         public virtual void AfterCreate() { }
