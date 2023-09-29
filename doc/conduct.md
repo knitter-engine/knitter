@@ -2,8 +2,12 @@
 When submitting on Github, it is necessary to submit according to the prescribed format standards.
 The format is' Type: Description '.For example, “update：graphic”、“fixed：null reference bug”
 Currently, there are two types:
-- update: update code or file
+- new: new feature or new module/code
+- update: update code/function/module
 - fix[ed]: fix bug
+- doc: any operation about doc
+- test: any operation about test
+- example: any operation about example
 
 
 # code conduct
