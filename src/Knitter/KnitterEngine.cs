@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using Knitter.Render;
 
 namespace Knitter
 {
     public class KnitterEngine
     {
-        private World _world;
+        private readonly World _world;
         private bool _canRun;
+        private Renderer _renderer = new Renderer();
 
         public KnitterEngine(World world) {
             //TODO: world should be load from asset
