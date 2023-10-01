@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using Knitter.Render;
 
 namespace Knitter
@@ -10,7 +11,6 @@ namespace Knitter
     {
         private readonly World _world;
         private bool _canRun;
-        private Renderer _renderer = new Renderer();
 
         public KnitterEngine(World world) {
             //TODO: world should be load from asset
@@ -19,6 +19,7 @@ namespace Knitter
 
         public void Run()//TODO: avoid run twice
         {
+            Task.Factory.StartNew(() => { Renderer.Run(); });
             _canRun = true;
             while (_canRun)
             {

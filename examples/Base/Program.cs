@@ -10,5 +10,10 @@ gameObject.AddComponent(printActor);
 scene.AddGameObject(gameObject);
 world.AddScene(scene);
 
+if (File.Exists("Knitter-logo-128.png"))
+{
+    Console.WriteLine("file exists");
+}
+
 KnitterEngine engine = new KnitterEngine(world);
 engine.Run();
