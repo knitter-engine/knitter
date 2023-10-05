@@ -1,5 +1,6 @@
-using Silk.NET.OpenGL;
 using System;
+using OpenTK.Compute.OpenCL;
+using OpenTK.Graphics.OpenGL4;
 
 namespace Knitter.Render
 {
@@ -7,33 +8,55 @@ namespace Knitter.Render
         where TVertexType : unmanaged
         where TIndexType : unmanaged
     {
-        private uint _handle;
-        private GL _gl;
+        public readonly int handle;
 
-        public VertexArrayObject(GL gl, BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
+        public VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
         {
-            _gl = gl;
-
-            _handle = _gl.GenVertexArray();
+            handle = GL.GenVertexArray();
             Bind();
             vbo.Bind();
             ebo.Bind();
         }
 
-        public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, uint vertexSize, int offSet)
+        public unsafe void VertexAttributePointer(int index, int count, VertexAttribPointerType type, int vertexSize, nint offSet)
         {
-            _gl.VertexAttribPointer(index, count, type, false, vertexSize * (uint) sizeof(TVertexType), (void*) (offSet * sizeof(TVertexType)));
-            _gl.EnableVertexAttribArray(index);
+            GL.VertexAttribPointer(index, count, type, false, vertexSize * sizeof(TVertexType), offSet * sizeof(TVertexType));
+            GL.EnableVertexAttribArray(index);
         }
 
         public void Bind()
         {
-            _gl.BindVertexArray(_handle);
+            GL.BindVertexArray(handle);
         }
+
+        #region Dispose
+        private bool _disposed = false;
 
         public void Dispose()
         {
-            _gl.DeleteVertexArray(_handle);
+            Dispose(true);
+            GC.SuppressFinalize(this);
         }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!_disposed)
+            {
+                // customize release code
+                GL.DeleteVertexArray(handle);
+                // end of customize release code
+
+                _disposed = true;
+            }
+        }
+
+        ~VertexArrayObject()
+        {
+            if (!_disposed)
+            {
+                Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");//TODO: internal log error
+            }
+        }
+        #endregion
     }
 }

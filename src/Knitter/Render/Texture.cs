@@ -1,34 +1,31 @@
-using Silk.NET.OpenGL;
 using System;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
+using OpenTK.Graphics.OpenGL4;
+using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 
 namespace Knitter.Render
 {
     public class Texture : IDisposable
     {
-        private uint _handle;
-        private GL _gl;
+        private int _handle;
 
-        public unsafe Texture(GL gl, string path)
+        public unsafe Texture(string path)
         {
-            _gl = gl;
-
-            _handle = _gl.GenTexture();
+            _handle = GL.GenTexture();
             Bind();
 
             using (var img = Image.Load<Rgba32>(path))
             {
-                gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba8, (uint) img.Width, (uint) img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, null);
+                GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, img.Width, img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, nint.Zero);
 
                 img.ProcessPixelRows(accessor =>
                 {
-                    for (int y = 0; y < accessor.Height; y++)
-                    {
-                        fixed (void* data = accessor.GetRowSpan(y))
-                        {
-                            gl.TexSubImage2D(TextureTarget.Texture2D, 0, 0, y, (uint) accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-                        }
+                for (int y = 0; y < accessor.Height; y++)
+                {
+                    fixed (void* data = accessor.GetRowSpan(y))
+                        GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, y, accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, (nint)data);
                     }
                 });
             }
@@ -36,40 +33,36 @@ namespace Knitter.Render
             SetParameters();
         }
 
-        public unsafe Texture(GL gl, Span<byte> data, uint width, uint height)
+        //TODO: if nint should be Span<nint>?
+        public unsafe Texture(nint data, int width, int height)
         {
-            _gl = gl;
-
-            _handle = _gl.GenTexture();
+            _handle = GL.GenTexture();
             Bind();
 
-            fixed (void* d = &data[0])
-            {
-                _gl.TexImage2D(TextureTarget.Texture2D, 0, (int) InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
-                SetParameters();
-            }
+            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
+            SetParameters();
         }
 
         private void SetParameters()
         {
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int) GLEnum.ClampToEdge);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int) GLEnum.ClampToEdge);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int) GLEnum.LinearMipmapLinear);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int) GLEnum.Linear);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
-            _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 8);
-            _gl.GenerateMipmap(TextureTarget.Texture2D);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
+            GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 8);
+            GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
         }
 
         public void Bind(TextureUnit textureSlot = TextureUnit.Texture0)
         {
-            _gl.ActiveTexture(textureSlot);
-            _gl.BindTexture(TextureTarget.Texture2D, _handle);
+            GL.ActiveTexture(textureSlot);
+            GL.BindTexture(TextureTarget.Texture2D, _handle);
         }
 
         public void Dispose()
         {
-            _gl.DeleteTexture(_handle);
+            GL.DeleteTexture(_handle);
         }
     }
 }

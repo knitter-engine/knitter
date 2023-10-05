@@ -19,15 +19,20 @@ namespace Knitter
 
         public void Run()//TODO: avoid run twice
         {
-            Task.Factory.StartNew(() => { Renderer.Run(); });
-            _canRun = true;
-            while (_canRun)
+            Task.Factory.StartNew(() => {
+                _canRun = true;
+                while (_canRun)
+                {
+                    Time.Update();
+                    //TODO: input.Update();
+                    _world.Update();
+                    //TODO: render.Update();
+                    Thread.Sleep((int)Random.Shared.NextInt64(100, 500));
+                }
+            });
+            using (Game game = new Game(800, 600, "LearnOpenTK"))
             {
-                Time.Update();
-                //TODO: input.Update();
-                _world.Update();
-                //TODO: render.Update();
-                Thread.Sleep((int)Random.Shared.NextInt64(100, 500));
+                game.Run();
             }
         }
 
