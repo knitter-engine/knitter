@@ -4,29 +4,28 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 
-namespace Knitter
+namespace Knitter;
+
+public static class Time
 {
-    public static class Time
+    static Time()
     {
-        static Time()
-        {
-            _timer.Start();
-        }
+        _timer.Start();
+    }
 
-        private static Stopwatch _timer = new Stopwatch();
-        private static long _lastUpdateMilliseconds;
-        private static long _currentUpdateMilliseconds;
+    private static Stopwatch _timer = new Stopwatch();
+    private static long _lastUpdateMilliseconds;
+    private static long _currentUpdateMilliseconds;
 
-        public static float deltaTime;
-        public static long SecondsFromStartup => _currentUpdateMilliseconds / 1000;
-        public static long MillisecondsFromStartup => _currentUpdateMilliseconds;
+    public static float deltaTime;
+    public static long SecondsFromStartup => _currentUpdateMilliseconds / 1000;
+    public static long MillisecondsFromStartup => _currentUpdateMilliseconds;
 
-        public static void Update()
-        {
-            _currentUpdateMilliseconds = _timer.ElapsedMilliseconds;
-            deltaTime = (_currentUpdateMilliseconds - _lastUpdateMilliseconds) / 1000f;
+    public static void Update()
+    {
+        _currentUpdateMilliseconds = _timer.ElapsedMilliseconds;
+        deltaTime = (_currentUpdateMilliseconds - _lastUpdateMilliseconds) / 1000f;
 
-            _lastUpdateMilliseconds = _currentUpdateMilliseconds;
-        }
+        _lastUpdateMilliseconds = _currentUpdateMilliseconds;
     }
 }

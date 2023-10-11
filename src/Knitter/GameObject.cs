@@ -2,18 +2,17 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Knitter
+namespace Knitter;
+
+public class GameObject
 {
-    public class GameObject
+    private List<UserActor> _actors = new List<UserActor>();
+
+    internal void Update()
     {
-        private List<UserActor> _actors = new List<UserActor>();
-
-        internal void Update()
-        {
-            _actors.ForEach(o => o.Update());
-        }
-
-        public void AddComponent(UserActor actor) => _actors.Add(actor);
-        public void RemoveComponent(UserActor actor) => _actors.Remove(actor);
+        _actors.ForEach(o => o.Update());
     }
+
+    public void AddComponent(UserActor actor) => _actors.Add(actor);
+    public void RemoveComponent(UserActor actor) => _actors.Remove(actor);
 }

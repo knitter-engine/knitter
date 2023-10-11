@@ -12,6 +12,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Platform\Graphics\Graphics.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="shader.frag">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
