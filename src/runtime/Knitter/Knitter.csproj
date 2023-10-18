@@ -12,7 +12,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Platform\Graphics\Graphics.csproj" />
+    <ProjectReference Include="..\Knitter.Platform\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
+    <ProjectReference Include="..\Knitter.Platform\Knitter.Platform.Window\Knitter.Platform.Window.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,9 +21,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="shader.vert">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Render\silk.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="silk.png">
