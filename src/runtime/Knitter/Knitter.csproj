@@ -7,13 +7,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenTK" Version="4.8.1" />
+    <PackageReference Include="Silk.NET" Version="2.17.1" />
     <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Knitter.Platform\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
-    <ProjectReference Include="..\Knitter.Platform\Knitter.Platform.Window\Knitter.Platform.Window.csproj" />
+    <ProjectReference Include="..\Platform\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
+    <ProjectReference Include="..\Platform\Knitter.Platform.Window\Knitter.Platform.Window.csproj" />
   </ItemGroup>
 
   <ItemGroup>

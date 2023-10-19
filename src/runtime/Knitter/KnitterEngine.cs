@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Silk.NET.OpenGL;
+using Silk.NET.GLFW;
+using Silk.NET.Windowing;
 
 namespace Knitter;
 
@@ -14,7 +17,7 @@ public class KnitterEngine
         _world = world;
     }
 
-    public void Run()//TODO: avoid run twice
+    public unsafe void Run()//TODO: avoid run twice
     {
         Task.Factory.StartNew(() => {
             _canRun = true;
@@ -27,10 +30,25 @@ public class KnitterEngine
                 Thread.Sleep((int)Random.Shared.NextInt64(100, 500));
             }
         });
-        using (GameMainWindow game = new GameMainWindow(800, 600, "LearnOpenTK"))
+
+        //GameMainWindow game = new GameMainWindow(800, 600, "LearnOpenTK");
+
+        //game.Run();
+        IWindow window = Window.Create(WindowOptions.Default);
+        Glfw glfw = Glfw.GetApi();
+        glfw.Init();
+        GL gl = GL.GetApi(window);
+
+        WindowHandle* glfwWin = glfw.CreateWindow(800, 600, "Learn silk.net", null, null);
+        while (!glfw.WindowShouldClose(glfwWin))
         {
-            game.Run();
+            
+
+            glfw.SwapBuffers(glfwWin);
+            Thread.Sleep(100);
         }
+
+
     }
 
     public void Stop()
