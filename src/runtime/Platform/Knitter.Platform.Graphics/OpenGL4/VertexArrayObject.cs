@@ -1,8 +1,9 @@
+using Knitter.Common.Utils;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Graphics.OpenGL;
 
-public class VertexArrayObject<TVertexType, TIndexType> : IDisposable
+public class VertexArrayObject<TVertexType, TIndexType> : ForceDisposable
     where TVertexType : unmanaged
     where TIndexType : unmanaged
 {
@@ -28,33 +29,8 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable
         _gl.BindVertexArray(handle);
     }
 
-    #region Dispose
-    private bool _disposed = false;
-
-    public void Dispose()
+    protected override void DoDispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        _gl.DeleteVertexArray(handle);
     }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            // customize release code
-            _gl.DeleteVertexArray(handle);
-            // end of customize release code
-
-            _disposed = true;
-        }
-    }
-
-    ~VertexArrayObject()
-    {
-        if (!_disposed)
-        {
-            Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");//TODO: internal log error
-        }
-    }
-    #endregion
 }

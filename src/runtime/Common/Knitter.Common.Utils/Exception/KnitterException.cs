@@ -9,3 +9,10 @@ public class NotInitializeException : KnitterException
 {
     public NotInitializeException(string message) : base(message) { }
 }
+
+public class UndisposedException : KnitterException
+{
+    public UndisposedException(string message) : base(message) { }
+}
+
+

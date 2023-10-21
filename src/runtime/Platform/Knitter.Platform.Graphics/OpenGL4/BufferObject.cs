@@ -1,8 +1,9 @@
+using Knitter.Common.Utils;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Graphics.OpenGL;
 
-public class BufferObject<TDataType> : IDisposable
+public class BufferObject<TDataType> : ForceDisposable
     where TDataType : unmanaged
 {
     private readonly static GL _gl = GLFactory.GetDefault();
@@ -26,7 +27,7 @@ public class BufferObject<TDataType> : IDisposable
         _gl.BindBuffer(_bufferType, _handle);
     }
 
-    public void Dispose()
+    protected override void DoDispose()
     {
         _gl.DeleteBuffer(_handle);
     }

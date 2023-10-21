@@ -1,9 +1,11 @@
+using Knitter.Common.Utils;
 using Silk.NET.OpenGL;
 using StbImageSharp;
+using System.Reflection.Metadata;
 
 namespace Knitter.Platform.Graphics.OpenGL;
 
-public class Texture : IDisposable
+public class Texture : ForceDisposable
 {
     private readonly static GL _gl = GLFactory.GetDefault();
 
@@ -57,34 +59,8 @@ public class Texture : IDisposable
         _gl.BindTexture(TextureTarget.Texture2D, _handle);
     }
 
-
-    #region Dispose
-    private bool _disposed = false;
-
-    public void Dispose()
+    protected override void DoDispose()
     {
-        Dispose(true);
-        GC.SuppressFinalize(this);
+        _gl.DeleteTexture(_handle);
     }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (!_disposed)
-        {
-            // customize release code
-            _gl.DeleteTexture(_handle);
-            // end of customize release code
-
-            _disposed = true;
-        }
-    }
-
-    ~Texture()
-    {
-        if (!_disposed)
-        {
-            Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");//TODO: internal log error
-        }
-    }
-    #endregion
 }
