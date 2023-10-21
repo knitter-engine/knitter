@@ -1,63 +1,90 @@
-using SixLabors.ImageSharp;
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
+using StbImageSharp;
 
-namespace Knitter.Platform.Graphics.OpenGL4;
+namespace Knitter.Platform.Graphics.OpenGL;
 
 public class Texture : IDisposable
 {
-    private int _handle;
+    private readonly static GL _gl = GLFactory.GetDefault();
+
+    private uint _handle;
 
     public unsafe Texture(string path)
     {
-        _handle = GL.GenTexture();
+        _handle = _gl.GenTexture();
         Bind();
 
-        using (var img = Image.Load<Rgba32>(path))
-        {
-            GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba8, img.Width, img.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, nint.Zero);
+        ImageResult result = ImageResult.FromMemory(File.ReadAllBytes(path), ColorComponents.RedGreenBlueAlpha);
 
-            img.ProcessPixelRows(accessor =>
-            {
-            for (int y = 0; y < accessor.Height; y++)
-            {
-                fixed (void* data = accessor.GetRowSpan(y))
-                    GL.TexSubImage2D(TextureTarget.Texture2D, 0, 0, y, accessor.Width, 1, PixelFormat.Rgba, PixelType.UnsignedByte, (nint)data);
-                }
-            });
+        fixed (byte* ptr = result.Data)
+        {
+            // Create our texture and upload the image data.
+            _gl.TexImage2D(TextureTarget.Texture2D, 0, InternalFormat.Rgba, (uint)result.Width,
+                (uint)result.Height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, ptr);
         }
 
         SetParameters();
     }
 
     //TODO: if nint should be Span<nint>?
-    public unsafe Texture(nint data, int width, int height)
+    public unsafe Texture(Span<byte> data, uint width, uint height)
     {
-        _handle = GL.GenTexture();
+        _handle = _gl.GenTexture();
         Bind();
 
-        GL.TexImage2D(TextureTarget.Texture2D, 0, PixelInternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, data);
-        SetParameters();
+        fixed (void* d = &data[0])
+        {
+            //Setting the data of a texture.
+            _gl.TexImage2D(TextureTarget.Texture2D, 0, (int)InternalFormat.Rgba, width, height, 0, PixelFormat.Rgba, PixelType.UnsignedByte, d);
+            SetParameters();
+        }
     }
 
     private void SetParameters()
     {
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
-        GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 8);
-        GL.GenerateMipmap(GenerateMipmapTarget.Texture2D);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.LinearMipmapLinear);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMagFilter, (int)TextureMinFilter.Linear);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureBaseLevel, 0);
+        _gl.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMaxLevel, 8);
+        _gl.GenerateMipmap(TextureTarget.Texture2D);
     }
 
     public void Bind(TextureUnit textureSlot = TextureUnit.Texture0)
     {
-        GL.ActiveTexture(textureSlot);
-        GL.BindTexture(TextureTarget.Texture2D, _handle);
+        _gl.ActiveTexture(textureSlot);
+        _gl.BindTexture(TextureTarget.Texture2D, _handle);
     }
+
+
+    #region Dispose
+    private bool _disposed = false;
 
     public void Dispose()
     {
-        GL.DeleteTexture(_handle);
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!_disposed)
+        {
+            // customize release code
+            _gl.DeleteTexture(_handle);
+            // end of customize release code
+
+            _disposed = true;
+        }
+    }
+
+    ~Texture()
+    {
+        if (!_disposed)
+        {
+            Console.WriteLine("GPU Resource leak! Did you forget to call Dispose()?");//TODO: internal log error
+        }
+    }
+    #endregion
 }

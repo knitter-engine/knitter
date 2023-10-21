@@ -1,29 +1,33 @@
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
 
-namespace Knitter.Platform.Graphics.OpenGL4;
+namespace Knitter.Platform.Graphics.OpenGL;
 
 public class BufferObject<TDataType> : IDisposable
     where TDataType : unmanaged
 {
-    private int _handle;
-    private BufferTarget _bufferType;
+    private readonly static GL _gl = GLFactory.GetDefault();
 
-    public unsafe BufferObject(TDataType[] data, BufferTarget bufferType)//TODO:different derived class for different buffer target
+    private uint _handle;
+    private BufferTargetARB _bufferType;
+
+    public unsafe BufferObject(Span<TDataType> data, BufferTargetARB bufferType)//TODO:different derived class for different buffer target
     {
         _bufferType = bufferType;
-
-        _handle = GL.GenBuffer();
+        _handle = _gl.GenBuffer();
         Bind();
-        GL.BufferData(bufferType, data.Length * sizeof(TDataType), data, BufferUsageHint.StaticDraw);
+        fixed (void* d = data)
+        {
+            _gl.BufferData(bufferType, (nuint)(data.Length * sizeof(TDataType)), d, BufferUsageARB.StaticDraw);
+        }
     }
 
     public void Bind()
     {
-        GL.BindBuffer(_bufferType, _handle);
+        _gl.BindBuffer(_bufferType, _handle);
     }
 
     public void Dispose()
     {
-        GL.DeleteBuffer(_handle);
+        _gl.DeleteBuffer(_handle);
     }
 }

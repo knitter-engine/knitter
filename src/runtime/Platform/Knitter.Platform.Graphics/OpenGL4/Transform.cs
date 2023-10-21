@@ -1,6 +1,6 @@
 using System.Numerics;
 
-namespace Knitter.Platform.Graphics.OpenGL4;
+namespace Knitter.Platform.Graphics.OpenGL;
 
 public class Transform
 {

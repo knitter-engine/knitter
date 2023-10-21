@@ -7,8 +7,11 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="GameMainWindow.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Silk.NET" Version="2.17.1" />
-    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>

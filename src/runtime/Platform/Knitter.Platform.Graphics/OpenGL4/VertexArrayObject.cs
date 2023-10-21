@@ -1,30 +1,31 @@
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
 
-namespace Knitter.Platform.Graphics.OpenGL4;
+namespace Knitter.Platform.Graphics.OpenGL;
 
 public class VertexArrayObject<TVertexType, TIndexType> : IDisposable
     where TVertexType : unmanaged
     where TIndexType : unmanaged
 {
-    public readonly int handle;
+    private readonly static GL _gl = GLFactory.GetDefault();
+    public readonly uint handle;
 
     public VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)
     {
-        handle = GL.GenVertexArray();
+        handle = _gl.GenVertexArray();
         Bind();
         vbo.Bind();
         ebo.Bind();
     }
 
-    public unsafe void VertexAttributePointer(int index, int count, VertexAttribPointerType type, int vertexSize, nint offSet)
+    public unsafe void VertexAttributePointer(uint index, int count, VertexAttribPointerType type, uint vertexSize, nint offSet)
     {
-        GL.VertexAttribPointer(index, count, type, false, vertexSize * sizeof(TVertexType), offSet * sizeof(TVertexType));
-        GL.EnableVertexAttribArray(index);
+        _gl.VertexAttribPointer(index, count, type, false, vertexSize * (uint)sizeof(TVertexType), (void*)(offSet * sizeof(TVertexType)));
+        _gl.EnableVertexAttribArray(index);
     }
 
     public void Bind()
     {
-        GL.BindVertexArray(handle);
+        _gl.BindVertexArray(handle);
     }
 
     #region Dispose
@@ -41,7 +42,7 @@ public class VertexArrayObject<TVertexType, TIndexType> : IDisposable
         if (!_disposed)
         {
             // customize release code
-            GL.DeleteVertexArray(handle);
+            _gl.DeleteVertexArray(handle);
             // end of customize release code
 
             _disposed = true;

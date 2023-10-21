@@ -1,81 +1,83 @@
 using System.Numerics;
-using OpenTK.Graphics.OpenGL4;
+using Silk.NET.OpenGL;
 
-namespace Knitter.Platform.Graphics.OpenGL4;
+namespace Knitter.Platform.Graphics.OpenGL;
 
 public class Shader : IDisposable
 {
-    private int _program;
+    private readonly static GL _gl = GLFactory.GetDefault();
+
+    private uint _program;
 
     public Shader(string vertexPath, string fragmentPath)
     {
-        int vertex = LoadShader(ShaderType.VertexShader, vertexPath);
-        int fragment = LoadShader(ShaderType.FragmentShader, fragmentPath);
+        uint vertex = LoadShader(ShaderType.VertexShader, vertexPath);
+        uint fragment = LoadShader(ShaderType.FragmentShader, fragmentPath);
 
-        _program = GL.CreateProgram();
-        GL.AttachShader(_program, vertex);
-        GL.AttachShader(_program, fragment);
-        GL.LinkProgram(_program);
+        _program = _gl.CreateProgram();
+        _gl.AttachShader(_program, vertex);
+        _gl.AttachShader(_program, fragment);
+        _gl.LinkProgram(_program);
 
-        GL.GetProgram(_program, GetProgramParameterName.LinkStatus, out var status);
+        _gl.GetProgram(_program, GLEnum.LinkStatus, out var status);
         if (status == 0)
         {
-            throw new Exception($"Program failed to link with error: {GL.GetProgramInfoLog(_program)}");//TODO: internal error
+            throw new Exception($"Program failed to link with error: {_gl.GetProgramInfoLog(_program)}");//TODO: internal error
         }
 
-        GL.DetachShader(_program, vertex);
-        GL.DetachShader(_program, fragment);
-        GL.DeleteShader(vertex);
-        GL.DeleteShader(fragment);
+        _gl.DetachShader(_program, vertex);
+        _gl.DetachShader(_program, fragment);
+        _gl.DeleteShader(vertex);
+        _gl.DeleteShader(fragment);
     }
 
     public void Use()
     {
-        GL.UseProgram(_program);
+        _gl.UseProgram(_program);
     }
 
     public void SetUniform(string name, int value)
     {
-        int location = GL.GetUniformLocation(_program, name);
+        int location = _gl.GetUniformLocation(_program, name);
         if (location == -1)
         {
             throw new Exception($"{name} uniform not found on shader.");//TODO: internal error
         }
-        GL.Uniform1(location, value);
+        _gl.Uniform1(location, value);
     }
 
     public unsafe void SetUniform(string name, Matrix4x4 value)
     {
         //A new overload has been created for setting a uniform so we can use the transform in our shader.
-        int location = GL.GetUniformLocation(_program, name);
+        int location = _gl.GetUniformLocation(_program, name);
         if (location == -1)
         {
             throw new Exception($"{name} uniform not found on shader.");
         }
-        GL.UniformMatrix4(location, 1, false, (float*) &value);
+        _gl.UniformMatrix4(location, 1, false, (float*) &value);
     }
 
     public void SetUniform(string name, float value)
     {
-        int location = GL.GetUniformLocation(_program, name);
+        int location = _gl.GetUniformLocation(_program, name);
         if (location == -1)
         {
             throw new Exception($"{name} uniform not found on shader.");
         }
-        GL.Uniform1(location, value);
+        _gl.Uniform1(location, value);
     }
 
     public int GetAttribLocation(string attribName)
     {
-        return GL.GetAttribLocation(_program, attribName);
+        return _gl.GetAttribLocation(_program, attribName);
     }
 
-    private int LoadShader(ShaderType type, string path)
+    private uint LoadShader(ShaderType type, string path)
     {
         string src = File.ReadAllText(path);
-        int handle = GL.CreateShader(type);
-        GL.ShaderSource(handle, src);
-        GL.CompileShader(handle);
+        uint handle = _gl.CreateShader(type);
+        _gl.ShaderSource(handle, src);
+        _gl.CompileShader(handle);
 
         //GL.GetShader(handle, ShaderParameter.CompileStatus, out int success);
         //if (success == 0)
@@ -83,7 +85,7 @@ public class Shader : IDisposable
         //    string infoLog = GL.GetShaderInfoLog(handle);
         //    Console.WriteLine(infoLog);
         //}
-        string infoLog = GL.GetShaderInfoLog(handle);
+        string infoLog = _gl.GetShaderInfoLog(handle);
         if (!string.IsNullOrWhiteSpace(infoLog))
         {
             throw new Exception($"Error compiling shader of type {type}, failed with error {infoLog}");//TODO: internal error
@@ -106,7 +108,7 @@ public class Shader : IDisposable
         if (!_disposed)
         {
             // customize release code
-            GL.DeleteProgram(_program);
+            _gl.DeleteProgram(_program);
             // end of customize release code
 
             _disposed = true;

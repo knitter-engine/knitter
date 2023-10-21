@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Silk.NET.OpenGL;
 using Silk.NET.GLFW;
 using Silk.NET.Windowing;
+using Knitter.Platform.Graphics.OpenGL;
+using Knitter.Platform.Window;
 
 namespace Knitter;
 
@@ -31,24 +33,15 @@ public class KnitterEngine
             }
         });
 
-        //GameMainWindow game = new GameMainWindow(800, 600, "LearnOpenTK");
+        GlfwWindow window = new GlfwWindow(800, 600, "Knitter Glfw Window");
 
-        //game.Run();
-        IWindow window = Window.Create(WindowOptions.Default);
-        Glfw glfw = Glfw.GetApi();
-        glfw.Init();
-        GL gl = GL.GetApi(window);
-
-        WindowHandle* glfwWin = glfw.CreateWindow(800, 600, "Learn silk.net", null, null);
-        while (!glfw.WindowShouldClose(glfwWin))
+        while (!window.IsClosed)
         {
-            
-
-            glfw.SwapBuffers(glfwWin);
-            Thread.Sleep(100);
+            window.Update();
+            Thread.Sleep(10);
         }
 
-
+        window.Close();
     }
 
     public void Stop()
