@@ -7,7 +7,7 @@ using Silk.NET.Windowing;
 
 namespace Knitter.Platform.Window;
 
-public unsafe class GlfwWindow
+public unsafe class GlfwWindow : IWindow
 {
     readonly Glfw _glfw;
     readonly WindowHandle* _window;
@@ -17,6 +17,7 @@ public unsafe class GlfwWindow
     public event Action? OnDestroy;
     public event Action? OnLogicUpdate;
     public event Action? OnRenderUpdate;
+    public event Action? OnResize;
 
     public GlfwWindow(int width, int height, string title)
     {
@@ -24,6 +25,8 @@ public unsafe class GlfwWindow
         _glfw.Init();
 
         _window = _glfw.CreateWindow(width, height, title, null, null);
+        _glfw.MakeContextCurrent(_window);//must make immediately, or the GL may throw exception before call MakeContextCurrent
+
         _gl = GL.GetApi(new GlfwContext(_glfw, _window));
         GLFactory.SetDefault(_gl);
 
@@ -40,15 +43,28 @@ public unsafe class GlfwWindow
         _glfw.Terminate();
     }
 
+    public void GetWindowSize(out int width, out int height)
+    {
+        _glfw.GetWindowSize(_window, out width, out height);
+    }
+
     public GL GetGraphicsInterface() => _gl;
 
     public void Update()
     {
+        _glfw.MakeContextCurrent(_window);
         LogicUpdate();
 
-        _glfw.MakeContextCurrent(_window);
         RenderUpdate();
         _glfw.SwapBuffers(_window);
+    }
+
+    public void Run()
+    {
+        while (!IsClosed)
+        {
+            Update();
+        }
     }
 
     void LogicUpdate()
@@ -57,15 +73,8 @@ public unsafe class GlfwWindow
         OnLogicUpdate?.Invoke();
     }
 
-    float _red = 0f;
-
     void RenderUpdate()
     {
-        _red += 0.01f;
-        if (_red > 1f) { _red = 0f; }
-
-        _gl.ClearColor(_red, 0f, 0f, 1f);
-        _gl.Clear(ClearBufferMask.ColorBufferBit);
 
         OnRenderUpdate?.Invoke();
     }

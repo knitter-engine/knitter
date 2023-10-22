@@ -17,6 +17,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Platform\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
     <ProjectReference Include="..\Platform\Knitter.Platform.Window\Knitter.Platform.Window.csproj" />
+    <ProjectReference Include="..\Service\GUI\Knitter.Service.GUI.ImGui\Knitter.Service.GUI.ImGui.csproj" />
   </ItemGroup>
 
   <ItemGroup>

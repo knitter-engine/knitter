@@ -6,6 +6,7 @@ using Silk.NET.GLFW;
 using Silk.NET.Windowing;
 using Knitter.Platform.Graphics.OpenGL;
 using Knitter.Platform.Window;
+using Knitter.Service.GUI.ImGUI;
 
 namespace Knitter;
 
@@ -33,7 +34,24 @@ public class KnitterEngine
             }
         });
 
-        GlfwWindow window = new GlfwWindow(800, 600, "Knitter Glfw Window");
+        int width = 1920;
+        int height = 1080;
+
+        GlfwWindow window = new GlfwWindow(width, height, "Knitter Glfw Window");
+        GL gl = window.GetGraphicsInterface();
+        ImGuiController _controller = new ImGuiController(gl, window);
+
+        window.OnRenderUpdate += () =>
+        {
+           _controller.Update(15);
+
+            gl.ClearColor(0.05f, 0.02f, 0.01f, 1f);
+            gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
+
+            ImGuiNET.ImGui.ShowDemoWindow();
+            _controller.Render();
+        };
+
 
         while (!window.IsClosed)
         {
