@@ -4,7 +4,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Text;
 
-namespace Knitter;
+namespace Knitter.Utils;
 
 public static class Time
 {

@@ -1,10 +1,11 @@
 ﻿using Base;
 using Knitter;
+using Knitter.GameObjects;
 
 World world = new World();
 Scene scene = new Scene();
 GameObject gameObject = new GameObject();
-PrintActor printActor = new PrintActor();
+PrintComponent printActor = new PrintComponent();
 
 gameObject.AddComponent(printActor);
 scene.AddGameObject(gameObject);

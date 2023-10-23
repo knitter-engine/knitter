@@ -1,8 +1,9 @@
-﻿using Knitter;
+﻿using Knitter.GameObjects;
+using Knitter.Utils;
 
 namespace Base
 {
-    internal class PrintActor :UserActor
+    internal class PrintComponent :UserComponent
     {
         public override void Update()
         {

@@ -1,20 +1,17 @@
-﻿using Knitter.Platform.Graphics.OpenGL;
+﻿using Knitter.Common.Utils;
+using Knitter.Platform.Graphics.OpenGL;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
-using Silk.NET.Windowing;
 
 namespace Knitter.Platform.Window;
 
-public unsafe class GlfwWindow : IWindow
+public unsafe class GlfwWindow : Disposable, IWindow
 {
     readonly Glfw _glfw;
     readonly WindowHandle* _window;
     readonly GL _gl;//TODO: change to use the rhi
 
-    public event Action? OnCreate;
-    public event Action? OnDestroy;
+    public event Action? OnClose;
     public event Action? OnLogicUpdate;
     public event Action? OnRenderUpdate;
     public event Action? OnResize;
@@ -32,13 +29,11 @@ public unsafe class GlfwWindow : IWindow
 
         _glfw.SetWindowSize(_window, width, height);
         _glfw.SetWindowTitle(_window, title);
-
-        OnCreate?.Invoke();
     }
 
-    ~GlfwWindow()
+    protected override void DoDispose()
     {
-        OnDestroy?.Invoke();
+        OnClose?.Invoke();
 
         _glfw.Terminate();
     }
@@ -52,6 +47,8 @@ public unsafe class GlfwWindow : IWindow
 
     public void Update()
     {
+        _glfw.PollEvents();
+
         _glfw.MakeContextCurrent(_window);
         LogicUpdate();
 
@@ -69,6 +66,7 @@ public unsafe class GlfwWindow : IWindow
 
     void LogicUpdate()
     {
+        //_glfw.in
 
         OnLogicUpdate?.Invoke();
     }

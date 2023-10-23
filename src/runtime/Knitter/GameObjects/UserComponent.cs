@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace Knitter;
+namespace Knitter.GameObjects;
 
-public class UserActor
+public class UserComponent
 {
     public virtual void OnCreate() { }
     public virtual void AfterCreate() { }
