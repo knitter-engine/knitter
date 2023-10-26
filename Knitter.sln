@@ -29,6 +29,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GUI", "GUI", "{8C86603E-310
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter.Service.GUI.ImGui", "src\runtime\Service\GUI\Knitter.Service.GUI.ImGui\Knitter.Service.GUI.ImGui.csproj", "{091B6E9A-1078-4B18-A158-FCE66D1177C0}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter.Platform.Input", "src\runtime\Platform\Knitter.Platform.Input\Knitter.Platform.Input.csproj", "{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -59,6 +61,10 @@ Global
 		{091B6E9A-1078-4B18-A158-FCE66D1177C0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{091B6E9A-1078-4B18-A158-FCE66D1177C0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{091B6E9A-1078-4B18-A158-FCE66D1177C0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +80,7 @@ Global
 		{A25F8B86-FE09-4732-9B6F-483CC911917F} = {B4FCC33F-3C74-448E-8DED-A7BB43C5683E}
 		{8C86603E-3104-42DF-A0C5-A54C8A4E9038} = {A25F8B86-FE09-4732-9B6F-483CC911917F}
 		{091B6E9A-1078-4B18-A158-FCE66D1177C0} = {8C86603E-3104-42DF-A0C5-A54C8A4E9038}
+		{BD1328A3-4CCF-4E7E-BB78-2867FF1157D5} = {D63A636B-3F2F-48B0-84AC-A94ECECC498F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A417F4DC-30B7-4410-A3E1-1ABD157CBDFB}
