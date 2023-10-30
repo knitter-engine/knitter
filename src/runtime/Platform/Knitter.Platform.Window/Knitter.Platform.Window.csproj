@@ -16,8 +16,4 @@
     <PackageReference Include="Silk.NET" Version="2.17.1" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="..\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
-  </ItemGroup>
-
 </Project>
