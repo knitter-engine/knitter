@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Common\Knitter.Common.Utils\Knitter.Common.Utils.csproj" />
+    <ProjectReference Include="..\..\..\Common\Knitter.Common.Utils\Knitter.Common.Utils.csproj" />
   </ItemGroup>
 
 </Project>

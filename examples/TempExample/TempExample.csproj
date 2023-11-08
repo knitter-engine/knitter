@@ -9,7 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Silk.NET" Version="2.18.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\..\src\runtime\Knitter\Knitter.csproj" />
+    <ProjectReference Include="..\..\src\runtime\Platform\Graphics\Knitter.Platform.Graphics.Vulkan\Knitter.Platform.Graphics.Vulkan.csproj" />
   </ItemGroup>
 
 </Project>
