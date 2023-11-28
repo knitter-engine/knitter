@@ -13,4 +13,13 @@
     <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.19.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="shaders\frag.spv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="shaders\vert.spv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
