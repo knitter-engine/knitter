@@ -9,11 +9,22 @@
 
   <ItemGroup>
     <PackageReference Include="Silk.NET" Version="2.18.0" />
+    <PackageReference Include="Silk.NET.Assimp" Version="2.19.0" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.EXT" Version="2.19.0" />
     <PackageReference Include="Silk.NET.Vulkan.Extensions.KHR" Version="2.19.0" />
+    <PackageReference Include="SixLabors.ImageSharp" Version="3.0.2" />
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Assets\texture.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\viking_room.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\viking_room.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="shaders\frag.spv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
