@@ -33,7 +33,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Graphics", "Graphics", "{20
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter.Platform.Graphics.OpenGL", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics.OpenGL\Knitter.Platform.Graphics.OpenGL.csproj", "{919C7B69-5E4E-4667-8C33-8E9C559E5B62}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knitter.Platform.Graphics.Vulkan", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics.Vulkan\Knitter.Platform.Graphics.Vulkan.csproj", "{088949D6-F3FD-451F-B166-CB335E9EFF85}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter.Platform.Graphics.Vulkan", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics.Vulkan\Knitter.Platform.Graphics.Vulkan.csproj", "{088949D6-F3FD-451F-B166-CB335E9EFF85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knitter.Platform.Graphics.Common", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics.Common\Knitter.Platform.Graphics.Common.csproj", "{4F8E96FB-B548-468C-A281-390FB1ADBAD8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -73,6 +75,10 @@ Global
 		{088949D6-F3FD-451F-B166-CB335E9EFF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{088949D6-F3FD-451F-B166-CB335E9EFF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{088949D6-F3FD-451F-B166-CB335E9EFF85}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -91,6 +97,7 @@ Global
 		{20F3E08B-30B6-456C-80C1-1FA971988957} = {D63A636B-3F2F-48B0-84AC-A94ECECC498F}
 		{919C7B69-5E4E-4667-8C33-8E9C559E5B62} = {20F3E08B-30B6-456C-80C1-1FA971988957}
 		{088949D6-F3FD-451F-B166-CB335E9EFF85} = {20F3E08B-30B6-456C-80C1-1FA971988957}
+		{4F8E96FB-B548-468C-A281-390FB1ADBAD8} = {20F3E08B-30B6-456C-80C1-1FA971988957}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A417F4DC-30B7-4410-A3E1-1ABD157CBDFB}

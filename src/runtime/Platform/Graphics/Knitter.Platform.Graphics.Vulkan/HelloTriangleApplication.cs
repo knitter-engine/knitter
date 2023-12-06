@@ -32,55 +32,6 @@ struct SwapChainSupportDetails
     public PresentModeKHR[] PresentModes;
 }
 
-struct Vertex
-{
-    public Vector3D<float> pos;
-    public Vector3D<float> color;
-    public Vector2D<float> textCoord;
-
-    public static VertexInputBindingDescription GetBindingDescription()
-    {
-        VertexInputBindingDescription bindingDescription = new()
-        {
-            Binding = 0,
-            Stride = (uint)Unsafe.SizeOf<Vertex>(),
-            InputRate = VertexInputRate.Vertex,
-        };
-
-        return bindingDescription;
-    }
-
-    public static VertexInputAttributeDescription[] GetAttributeDescriptions()
-    {
-        var attributeDescriptions = new[]
-        {
-            new VertexInputAttributeDescription()
-            {
-                Binding = 0,
-                Location = 0,
-                Format = Format.R32G32B32Sfloat,
-                Offset = (uint)Marshal.OffsetOf<Vertex>(nameof(pos)),
-            },
-            new VertexInputAttributeDescription()
-            {
-                Binding = 0,
-                Location = 1,
-                Format = Format.R32G32B32Sfloat,
-                Offset = (uint)Marshal.OffsetOf<Vertex>(nameof(color)),
-            },
-            new VertexInputAttributeDescription()
-            {
-                Binding = 0,
-                Location = 2,
-                Format = Format.R32G32Sfloat,
-                Offset = (uint)Marshal.OffsetOf<Vertex>(nameof(textCoord)),
-            }
-        };
-
-        return attributeDescriptions;
-    }
-}
-
 struct UniformBufferObject
 {
     public Matrix4X4<float> model;
@@ -177,9 +128,7 @@ public unsafe class HelloTriangleApplication
 
     private bool frameBufferResized = false;
 
-    private Vertex[]? vertices;
-
-    private uint[]? indices;
+    private Model? model;
 
     public void Run()
     {
@@ -233,7 +182,7 @@ public unsafe class HelloTriangleApplication
         CreateTextureImage();
         CreateTextureImageView();
         CreateTextureSampler();
-        LoadModel();
+        this.model = new Model(MODEL_PATH);
         CreateVertexBuffer();
         CreateIndexBuffer();
         CreateUniformBuffers();
@@ -1387,72 +1336,10 @@ public unsafe class HelloTriangleApplication
         EndSingleTimeCommands(commandBuffer);
     }
 
-    private void LoadModel()
-    {
-        using var assimp = Assimp.GetApi();
-        var scene = assimp.ImportFile(MODEL_PATH, (uint)PostProcessPreset.TargetRealTimeMaximumQuality);
-
-        var vertexMap = new Dictionary<Vertex, uint>();
-        var vertices = new List<Vertex>();
-        var indices = new List<uint>();
-
-        VisitSceneNode(scene->MRootNode);
-
-        assimp.ReleaseImport(scene);
-
-        this.vertices = vertices.ToArray();
-        this.indices = indices.ToArray();
-
-        void VisitSceneNode(Node* node)
-        {
-            for (int m = 0; m < node->MNumMeshes; m++)
-            {
-                var mesh = scene->MMeshes[node->MMeshes[m]];
-
-                for (int f = 0; f < mesh->MNumFaces; f++)
-                {
-                    var face = mesh->MFaces[f];
-
-                    for (int i = 0; i < face.MNumIndices; i++)
-                    {
-                        uint index = face.MIndices[i];
-
-                        var position = mesh->MVertices[index];
-                        var texture = mesh->MTextureCoords[0][(int)index];
-
-                        Vertex vertex = new()
-                        {
-                            pos = new Vector3D<float>(position.X, position.Y, position.Z),
-                            color = new Vector3D<float>(1, 1, 1),
-                            //Flip Y for OBJ in Vulkan
-                            textCoord = new Vector2D<float>(texture.X, 1.0f - texture.Y)
-                        };
-
-                        if (vertexMap.TryGetValue(vertex, out var meshIndex))
-                        {
-                            indices.Add(meshIndex);
-                        }
-                        else
-                        {
-                            indices.Add((uint)vertices.Count);
-                            vertexMap[vertex] = (uint)vertices.Count;
-                            vertices.Add(vertex);
-                        }
-                    }
-                }
-            }
-
-            for (int c = 0; c < node->MNumChildren; c++)
-            {
-                VisitSceneNode(node->MChildren[c]);
-            }
-        }
-    }
-
 
     private void CreateVertexBuffer()
     {
-        ulong bufferSize = (ulong)(Unsafe.SizeOf<Vertex>() * vertices!.Length);
+        ulong bufferSize = (ulong)(Unsafe.SizeOf<Vertex>() * model!.vertices!.Length);
 
         Buffer stagingBuffer = default;
         DeviceMemory stagingBufferMemory = default;
@@ -1460,7 +1347,7 @@ public unsafe class HelloTriangleApplication
 
         void* data;
         vk!.MapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        vertices.AsSpan().CopyTo(new Span<Vertex>(data, vertices.Length));
+        model!.vertices.AsSpan().CopyTo(new Span<Vertex>(data, model!.vertices.Length));
         vk!.UnmapMemory(device, stagingBufferMemory);
 
         CreateBuffer(bufferSize, BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.DeviceLocalBit, ref vertexBuffer, ref vertexBufferMemory);
@@ -1473,7 +1360,7 @@ public unsafe class HelloTriangleApplication
 
     private void CreateIndexBuffer()
     {
-        ulong bufferSize = (ulong)(Unsafe.SizeOf<uint>() * indices!.Length);
+        ulong bufferSize = (ulong)(Unsafe.SizeOf<uint>() * model!.indices!.Length);
 
         Buffer stagingBuffer = default;
         DeviceMemory stagingBufferMemory = default;
@@ -1481,7 +1368,7 @@ public unsafe class HelloTriangleApplication
 
         void* data;
         vk!.MapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        indices.AsSpan().CopyTo(new Span<uint>(data, indices.Length));
+        model!.indices.AsSpan().CopyTo(new Span<uint>(data, model!.indices.Length));
         vk!.UnmapMemory(device, stagingBufferMemory);
 
         CreateBuffer(bufferSize, BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.DeviceLocalBit, ref indexBuffer, ref indexBufferMemory);
@@ -1806,7 +1693,7 @@ public unsafe class HelloTriangleApplication
 
             vk!.CmdBindDescriptorSets(commandBuffers[i], PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSets![i], 0, null);
 
-            vk!.CmdDrawIndexed(commandBuffers[i], (uint)indices!.Length, 1, 0, 0, 0);
+            vk!.CmdDrawIndexed(commandBuffers[i], (uint)model!.indices!.Length, 1, 0, 0, 0);
 
             vk!.CmdEndRenderPass(commandBuffers[i]);
 
