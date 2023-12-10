@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net7.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
@@ -13,12 +13,12 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Silk.NET" Version="2.17.1" />
+    <PackageReference Include="Silk.NET" Version="2.18.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Knitter.Common.Utils\Knitter.Common.Utils.csproj" />
-    <ProjectReference Include="..\Graphics\Knitter.Platform.Graphics.OpenGL\Knitter.Platform.Graphics.OpenGL.csproj" />
+    <ProjectReference Include="..\Graphics\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
   </ItemGroup>
 
 </Project>

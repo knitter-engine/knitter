@@ -37,6 +37,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Knitter.Platform.Graphics.V
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knitter.Platform.Graphics.Common", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics.Common\Knitter.Platform.Graphics.Common.csproj", "{4F8E96FB-B548-468C-A281-390FB1ADBAD8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Knitter.Platform.Graphics", "src\runtime\Platform\Graphics\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj", "{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -79,6 +81,10 @@ Global
 		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4F8E96FB-B548-468C-A281-390FB1ADBAD8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -98,6 +104,7 @@ Global
 		{919C7B69-5E4E-4667-8C33-8E9C559E5B62} = {20F3E08B-30B6-456C-80C1-1FA971988957}
 		{088949D6-F3FD-451F-B166-CB335E9EFF85} = {20F3E08B-30B6-456C-80C1-1FA971988957}
 		{4F8E96FB-B548-468C-A281-390FB1ADBAD8} = {20F3E08B-30B6-456C-80C1-1FA971988957}
+		{3F2F1774-3B46-44D9-8F6C-D3D6063D55D8} = {20F3E08B-30B6-456C-80C1-1FA971988957}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {A417F4DC-30B7-4410-A3E1-1ABD157CBDFB}
