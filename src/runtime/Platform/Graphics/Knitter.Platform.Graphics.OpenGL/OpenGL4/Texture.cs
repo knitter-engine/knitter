@@ -1,4 +1,5 @@
 using Knitter.Common.Utils;
+using Knitter.Platform.Graphics.Common;
 using Silk.NET.OpenGL;
 using StbImageSharp;
 using System.Reflection.Metadata;
@@ -7,7 +8,7 @@ namespace Knitter.Platform.Graphics.OpenGL;
 
 public class Texture : ForceDisposable
 {
-    private readonly static GL _gl = GLFactory.GetDefault();
+    private readonly static GL _gl = GraphicsApiFactory.OpenGL!;
 
     private uint _handle;
 

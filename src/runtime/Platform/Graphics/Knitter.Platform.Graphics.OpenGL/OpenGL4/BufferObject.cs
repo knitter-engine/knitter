@@ -1,4 +1,5 @@
 using Knitter.Common.Utils;
+using Knitter.Platform.Graphics.Common;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Graphics.OpenGL;
@@ -6,7 +7,7 @@ namespace Knitter.Platform.Graphics.OpenGL;
 public class BufferObject<TDataType> : ForceDisposable
     where TDataType : unmanaged
 {
-    private readonly static GL _gl = GLFactory.GetDefault();
+    private readonly static GL _gl = GraphicsApiFactory.OpenGL;
 
     private uint _handle;
     private BufferTargetARB _bufferType;

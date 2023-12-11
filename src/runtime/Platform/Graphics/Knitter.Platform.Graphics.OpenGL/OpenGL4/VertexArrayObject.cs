@@ -1,4 +1,5 @@
 using Knitter.Common.Utils;
+using Knitter.Platform.Graphics.Common;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Graphics.OpenGL;
@@ -7,7 +8,7 @@ public class VertexArrayObject<TVertexType, TIndexType> : ForceDisposable
     where TVertexType : unmanaged
     where TIndexType : unmanaged
 {
-    private readonly static GL _gl = GLFactory.GetDefault();
+    private readonly static GL _gl = GraphicsApiFactory.OpenGL!;
     public readonly uint handle;
 
     public VertexArrayObject(BufferObject<TVertexType> vbo, BufferObject<TIndexType> ebo)

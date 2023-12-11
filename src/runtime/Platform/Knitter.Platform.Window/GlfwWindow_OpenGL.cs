@@ -1,11 +1,12 @@
 ﻿using Knitter.Common.Utils;
-using Knitter.Platform.Graphics.OpenGL;
+using Knitter.Platform.Graphics;
+using Knitter.Platform.Graphics.Common;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Window;
 
-public unsafe class GlfwWindow : Disposable, IWindow
+public unsafe class GlfwWindow_OpenGL : Disposable, IWindow
 {
     readonly Glfw _glfw;
     readonly WindowHandle* _window;
@@ -14,9 +15,9 @@ public unsafe class GlfwWindow : Disposable, IWindow
     public event Action? OnClose;
     public event Action? OnLogicUpdate;
     public event Action? OnRenderUpdate;
-    public event Action? OnResize;
+    public event Action<int, int>? OnResize;
 
-    public GlfwWindow(int width, int height, string title)
+    public GlfwWindow_OpenGL(int width, int height, string title)
     {
         _glfw = Glfw.GetApi();
         _glfw.Init();
@@ -25,7 +26,7 @@ public unsafe class GlfwWindow : Disposable, IWindow
         _glfw.MakeContextCurrent(_window);//must make immediately, or the GL may throw exception before call MakeContextCurrent
 
         _gl = GL.GetApi(new GlfwContext(_glfw, _window));
-        GLFactory.SetDefault(_gl);
+        GraphicsApiFactory.OpenGL = _gl;
 
         _glfw.SetWindowSize(_window, width, height);
         _glfw.SetWindowTitle(_window, title);

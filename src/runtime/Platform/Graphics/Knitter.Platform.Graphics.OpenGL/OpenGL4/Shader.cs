@@ -1,12 +1,13 @@
 using System.Numerics;
 using Knitter.Common.Utils;
+using Knitter.Platform.Graphics.Common;
 using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Graphics.OpenGL;
 
 public class Shader : ForceDisposable
 {
-    private readonly static GL _gl = GLFactory.GetDefault();
+    private readonly static GL _gl = GraphicsApiFactory.OpenGL!;
 
     private uint _program;
 

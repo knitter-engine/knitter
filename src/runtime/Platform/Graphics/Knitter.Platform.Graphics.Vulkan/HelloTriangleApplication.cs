@@ -1,6 +1,5 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
-using Silk.NET.Assimp;
 using Silk.NET.Core;
 using Silk.NET.Core.Native;
 using Silk.NET.Maths;
@@ -8,9 +7,11 @@ using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
 using Silk.NET.Windowing;
+using Knitter.Platform.Window;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
+using System.Diagnostics;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 
@@ -61,8 +62,8 @@ public unsafe class HelloTriangleApplication
         KhrSwapchain.ExtensionName
     };
 
-    private IWindow? window;
     private Vk? vk;
+    private GlfwWindow_Vulkan? window;
 
     private Instance instance;
 
@@ -141,24 +142,11 @@ public unsafe class HelloTriangleApplication
     private void InitWindow()
     {
         //Create a window.
-        var options = WindowOptions.DefaultVulkan with
-        {
-            Size = new Vector2D<int>(WIDTH, HEIGHT),
-            Title = "Vulkan",
-        };
-
-        window = Window.Create(options);
-        window.Initialize();
-
-        if (window.VkSurface is null)
-        {
-            throw new Exception("Windowing platform doesn't support Vulkan.");
-        }
-
-        window.Resize += FramebufferResizeCallback;
+        window = new(WIDTH, HEIGHT, "Vulkan");
+        window.OnResize += FramebufferResizeCallback;
     }
 
-    private void FramebufferResizeCallback(Vector2D<int> obj)
+    private void FramebufferResizeCallback(int width, int height)
     {
         frameBufferResized = true;
     }
@@ -192,10 +180,15 @@ public unsafe class HelloTriangleApplication
         CreateSyncObjects();
     }
 
+    Stopwatch sw = new Stopwatch();
     private void MainLoop()
     {
-        window!.Render += DrawFrame;
-        window!.Run();
+        sw.Start();
+        while (!window.IsClosed)
+        {
+            DrawFrame(sw.ElapsedMilliseconds/500);
+            window.Update();
+        }
         vk!.DeviceWaitIdle(device);
     }
 
@@ -283,13 +276,14 @@ public unsafe class HelloTriangleApplication
 
     private void RecreateSwapChain()
     {
-        Vector2D<int> framebufferSize = window!.FramebufferSize;
+        // TODO
+        //Vector2D<int> framebufferSize = window!.FramebufferSize;
 
-        while (framebufferSize.X == 0 || framebufferSize.Y == 0)
-        {
-            framebufferSize = window.FramebufferSize;
-            window.DoEvents();
-        }
+        //while (framebufferSize.X == 0 || framebufferSize.Y == 0)
+        //{
+        //    framebufferSize = window.FramebufferSize;
+        //    window.DoEvents();
+        //}
 
         vk!.DeviceWaitIdle(device);
 
@@ -404,7 +398,10 @@ public unsafe class HelloTriangleApplication
             throw new NotSupportedException("KHR_surface extension not found.");
         }
 
-        surface = window!.VkSurface!.Create<AllocationCallbacks>(instance.ToHandle(), null).ToSurface();
+        // TODO: abstract
+        VkNonDispatchableHandle handle = new();
+        window!._glfw.CreateWindowSurface(instance.ToHandle(), window!._window, null, &handle);
+        surface = handle.ToSurface();
     }
 
     private void PickPhysicalDevice()
@@ -1737,7 +1734,7 @@ public unsafe class HelloTriangleApplication
     private void UpdateUniformBuffer(uint currentImage)
     {
         //Silk Window has timing information so we are skipping the time code.
-        var time = (float)window!.Time;
+        var time = (float)sw.ElapsedMilliseconds/500;
 
         UniformBufferObject ubo = new()
         {
@@ -1902,12 +1899,12 @@ public unsafe class HelloTriangleApplication
         }
         else
         {
-            var framebufferSize = window!.FramebufferSize;
+            window!.GetWindowSize(out int width, out int height);
 
             Extent2D actualExtent = new()
             {
-                Width = (uint)framebufferSize.X,
-                Height = (uint)framebufferSize.Y
+                Width = (uint)width,
+                Height = (uint)height
             };
 
             actualExtent.Width = Math.Clamp(actualExtent.Width, capabilities.MinImageExtent.Width, capabilities.MaxImageExtent.Width);
@@ -2036,7 +2033,7 @@ public unsafe class HelloTriangleApplication
 
     private string[] GetRequiredExtensions()
     {
-        var glfwExtensions = window!.VkSurface!.GetRequiredExtensions(out var glfwExtensionCount);
+        var glfwExtensions = window!._glfw.GetRequiredInstanceExtensions(out uint glfwExtensionCount);
         var extensions = SilkMarshal.PtrToStringArray((nint)glfwExtensions, (int)glfwExtensionCount);
 
         if (EnableValidationLayers)

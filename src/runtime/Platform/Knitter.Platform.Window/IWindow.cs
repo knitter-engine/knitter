@@ -9,6 +9,6 @@ namespace Knitter.Platform.Window;
 
 public interface IWindow
 {
-    public event Action? OnResize;
+    public event Action<int, int>? OnResize;
     public void GetWindowSize(out int width, out int height);
 }

@@ -39,7 +39,7 @@ public class KnitterEngine
         int width = 1680;
         int height = 920;
 
-        GlfwWindow window = new GlfwWindow(width, height, "Knitter Glfw Window");
+        GlfwWindow_OpenGL window = new GlfwWindow_OpenGL(width, height, "Knitter Glfw Window");
         GL gl = window.GetGraphicsInterface();
         ImGuiController _controller = new ImGuiController(gl, window);
 
