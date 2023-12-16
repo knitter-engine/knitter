@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Knitter.Common.Utils\Knitter.Common.Utils.csproj" />
+    <ProjectReference Include="..\Graphics\Knitter.Platform.Graphics.Vulkan\Knitter.Platform.Graphics.Vulkan.csproj" />
     <ProjectReference Include="..\Graphics\Knitter.Platform.Graphics\Knitter.Platform.Graphics.csproj" />
   </ItemGroup>
 

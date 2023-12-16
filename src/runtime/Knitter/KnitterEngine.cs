@@ -41,13 +41,13 @@ public class KnitterEngine
 
         GlfwWindow_OpenGL window = new GlfwWindow_OpenGL(width, height, "Knitter Glfw Window");
         GL gl = window.GetGraphicsInterface();
-        ImGuiController _controller = new ImGuiController(gl, window);
+        //ImGuiController _controller = new ImGuiController(gl, window);
 
         RenderDemo renderDemo = new RenderDemo(gl);
 
         window.OnRenderUpdate += () =>
         {
-           _controller.Update(15);
+           //_controller.Update(15);
 
             gl.ClearColor(0.05f, 0.05f, 0.05f, 1f);
             //gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
@@ -56,7 +56,7 @@ public class KnitterEngine
 
             ImGuiNET.ImGui.Text("123");
             ImGuiNET.ImGui.Button("456");
-            _controller.Render();
+            //_controller.Render();
         };
 
         window.OnClose += renderDemo.OnClose;

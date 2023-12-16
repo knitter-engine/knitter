@@ -6,7 +6,7 @@ using Silk.NET.OpenGL;
 
 namespace Knitter.Platform.Window;
 
-public unsafe class GlfwWindow_OpenGL : Disposable, IWindow
+public unsafe class GlfwWindow_OpenGL : Disposable /*TODO:, IWindow*/
 {
     readonly Glfw _glfw;
     readonly WindowHandle* _window;

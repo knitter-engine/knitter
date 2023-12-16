@@ -1,7 +1,11 @@
 ﻿using Knitter.Common.Utils;
 using Knitter.Platform.Graphics.Common;
+using Knitter.Platform.Graphics.Vulkan;
+using Silk.NET.Core.Native;
 using Silk.NET.GLFW;
+using Silk.NET.SDL;
 using Silk.NET.Vulkan;
+using Silk.NET.Windowing;
 
 namespace Knitter.Platform.Window;
 
@@ -46,23 +50,15 @@ public unsafe class GlfwWindow_Vulkan : Disposable, IWindow
 
     public Vk GetGraphicsInterface() => _vk;//TODO: interface
 
-    public void Update()
+    public void Update(float deltaTime)
     {
         _glfw.PollEvents();
 
         _glfw.MakeContextCurrent(_window);
-        LogicUpdate();
+        LogicUpdate();//TODO: deltaTime
 
-        RenderUpdate();
+        RenderUpdate();//TODO: deltaTime
         _glfw.SwapBuffers(_window);
-    }
-
-    public void Run()
-    {
-        while (!IsClosed)
-        {
-            Update();
-        }
     }
 
     void LogicUpdate()
@@ -78,12 +74,24 @@ public unsafe class GlfwWindow_Vulkan : Disposable, IWindow
         OnRenderUpdate?.Invoke();
     }
 
-    public void Close()
-    {
-        _glfw.SetWindowShouldClose(_window, true);
-    }
+    public void Close() => _glfw.SetWindowShouldClose(_window, true);
 
-    public bool IsClosed => _glfw.WindowShouldClose(_window);//TODO: rename IsClosed?
+    public bool IsAlive => !_glfw.WindowShouldClose(_window);
+
+    public HelloTriangleApplication GetRhi()
+    {
+        var glfwExtensions = _glfw.GetRequiredInstanceExtensions(out uint glfwExtensionCount);
+        var app = new HelloTriangleApplication(glfwExtensionCount, glfwExtensions);
+        OnResize += app.FramebufferResizeCallback;
+
+        VkNonDispatchableHandle handle = new();
+        _glfw.CreateWindowSurface(app.GetInstance().ToHandle(), _window, null, &handle);
+
+        app.CreateWindowSurface(handle);
+        app.InitVulkan();
+
+        return app;
+    }
 
 
 

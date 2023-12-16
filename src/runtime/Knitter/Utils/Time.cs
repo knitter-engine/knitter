@@ -17,7 +17,7 @@ public static class Time
     private static long _lastUpdateMilliseconds;
     private static long _currentUpdateMilliseconds;
 
-    public static float deltaTime;
+    public static float deltaTime;//delta time between two frames in seconds
     public static long SecondsFromStartup => _currentUpdateMilliseconds / 1000;
     public static long MillisecondsFromStartup => _currentUpdateMilliseconds;
 

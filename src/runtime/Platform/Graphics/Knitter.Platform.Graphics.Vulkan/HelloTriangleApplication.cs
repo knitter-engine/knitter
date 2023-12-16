@@ -6,8 +6,6 @@ using Silk.NET.Maths;
 using Silk.NET.Vulkan;
 using Silk.NET.Vulkan.Extensions.EXT;
 using Silk.NET.Vulkan.Extensions.KHR;
-using Silk.NET.Windowing;
-using Knitter.Platform.Window;
 using Buffer = Silk.NET.Vulkan.Buffer;
 using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
@@ -40,10 +38,11 @@ struct UniformBufferObject
     public Matrix4X4<float> proj;
 }
 
-public unsafe class HelloTriangleApplication
+public unsafe class HelloTriangleApplication : IDisposable
 {
-    const int WIDTH = 800;
-    const int HEIGHT = 600;
+    //TODO: split width/height
+    public const int WIDTH = 800;
+    public const int HEIGHT = 800;
 
     const string MODEL_PATH = @"Assets\viking_room.obj";
     const string TEXTURE_PATH = @"Assets\viking_room.png";
@@ -62,10 +61,10 @@ public unsafe class HelloTriangleApplication
         KhrSwapchain.ExtensionName
     };
 
-    private Vk? vk;
-    private GlfwWindow_Vulkan? window;
+    public Vk? vk;
 
     private Instance instance;
+    public Instance GetInstance() { return instance; }
 
     private ExtDebugUtils? debugUtils;
     private DebugUtilsMessengerEXT debugMessenger;
@@ -131,29 +130,24 @@ public unsafe class HelloTriangleApplication
 
     private Model? model;
 
-    public void Run()
+    public HelloTriangleApplication(uint glfwExtensionCount, byte** glfwExtensions)
     {
-        InitWindow();
-        InitVulkan();
-        MainLoop();
+        CreateInstance(glfwExtensionCount, glfwExtensions);
+    }
+
+    public void Dispose()
+    {
+        vk!.DeviceWaitIdle(device);
         CleanUp();
     }
 
-    private void InitWindow()
-    {
-        //Create a window.
-        window = new(WIDTH, HEIGHT, "Vulkan");
-        window.OnResize += FramebufferResizeCallback;
-    }
-
-    private void FramebufferResizeCallback(int width, int height)
+    public void FramebufferResizeCallback(int width, int height)
     {
         frameBufferResized = true;
     }
 
-    private void InitVulkan()
+    public void InitVulkan()
     {
-        CreateInstance();
         SetupDebugMessenger();
         CreateSurface();
         PickPhysicalDevice();
@@ -178,18 +172,6 @@ public unsafe class HelloTriangleApplication
         CreateDescriptorSets();
         CreateCommandBuffers();
         CreateSyncObjects();
-    }
-
-    Stopwatch sw = new Stopwatch();
-    private void MainLoop()
-    {
-        sw.Start();
-        while (!window.IsClosed)
-        {
-            DrawFrame(sw.ElapsedMilliseconds/500);
-            window.Update();
-        }
-        vk!.DeviceWaitIdle(device);
     }
 
     private void CleanUpSwapChain()
@@ -270,8 +252,6 @@ public unsafe class HelloTriangleApplication
         khrSurface!.DestroySurface(instance, surface, null);
         vk!.DestroyInstance(instance, null);
         vk!.Dispose();
-
-        window?.Dispose();
     }
 
     private void RecreateSwapChain()
@@ -304,7 +284,7 @@ public unsafe class HelloTriangleApplication
         imagesInFlight = new Fence[swapChainImages!.Length];
     }
 
-    private void CreateInstance()
+    private void CreateInstance(uint glfwExtensionCount, byte** glfwExtensions)
     {
         vk = Vk.GetApi();
 
@@ -329,7 +309,7 @@ public unsafe class HelloTriangleApplication
             PApplicationInfo = &appInfo
         };
 
-        var extensions = GetRequiredExtensions();
+        var extensions = GetRequiredExtensions(glfwExtensionCount, glfwExtensions);
         createInfo.EnabledExtensionCount = (uint)extensions.Length;
         createInfo.PpEnabledExtensionNames = (byte**)SilkMarshal.StringArrayToPtr(extensions); ;
 
@@ -397,11 +377,6 @@ public unsafe class HelloTriangleApplication
         {
             throw new NotSupportedException("KHR_surface extension not found.");
         }
-
-        // TODO: abstract
-        VkNonDispatchableHandle handle = new();
-        window!._glfw.CreateWindowSurface(instance.ToHandle(), window!._window, null, &handle);
-        surface = handle.ToSurface();
     }
 
     private void PickPhysicalDevice()
@@ -1731,10 +1706,11 @@ public unsafe class HelloTriangleApplication
         }
     }
 
+    static Stopwatch sw = Stopwatch.StartNew();
     private void UpdateUniformBuffer(uint currentImage)
     {
         //Silk Window has timing information so we are skipping the time code.
-        var time = (float)sw.ElapsedMilliseconds/500;
+        var time = (float)sw.ElapsedMilliseconds/1000;
 
         UniformBufferObject ubo = new()
         {
@@ -1752,7 +1728,7 @@ public unsafe class HelloTriangleApplication
 
     }
 
-    private void DrawFrame(double delta)
+    public void DrawFrame(double delta)
     {
         vk!.WaitForFences(device, 1, inFlightFences![currentFrame], true, ulong.MaxValue);
 
@@ -1899,12 +1875,13 @@ public unsafe class HelloTriangleApplication
         }
         else
         {
-            window!.GetWindowSize(out int width, out int height);
+            //TODO
+            //window!.GetWindowSize(out int width, out int height);
 
             Extent2D actualExtent = new()
             {
-                Width = (uint)width,
-                Height = (uint)height
+                Width = (uint)WIDTH,
+                Height = (uint)HEIGHT
             };
 
             actualExtent.Width = Math.Clamp(actualExtent.Width, capabilities.MinImageExtent.Width, capabilities.MaxImageExtent.Width);
@@ -2031,9 +2008,8 @@ public unsafe class HelloTriangleApplication
         return indices;
     }
 
-    private string[] GetRequiredExtensions()
+    private string[] GetRequiredExtensions(uint glfwExtensionCount, byte** glfwExtensions)
     {
-        var glfwExtensions = window!._glfw.GetRequiredInstanceExtensions(out uint glfwExtensionCount);
         var extensions = SilkMarshal.PtrToStringArray((nint)glfwExtensions, (int)glfwExtensionCount);
 
         if (EnableValidationLayers)
@@ -2064,5 +2040,10 @@ public unsafe class HelloTriangleApplication
         System.Diagnostics.Debug.WriteLine($"validation layer:" + Marshal.PtrToStringAnsi((nint)pCallbackData->PMessage));
 
         return Vk.False;
+    }
+
+    public void CreateWindowSurface(VkNonDispatchableHandle handle)
+    {
+        surface = handle.ToSurface();
     }
 }

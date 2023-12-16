@@ -16,10 +16,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\Knitter.Platform.Window\Knitter.Platform.Window.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="Assets\texture.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
