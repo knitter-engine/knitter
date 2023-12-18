@@ -4,7 +4,7 @@ using Silk.NET.Vulkan;
 
 namespace Knitter.Platform.Graphics.Common;
 
-public static class GraphicsApiFactory
+public static class GraphicsLibraryProvider
 {
     private static GL? _opengl;
     public static GL OpenGL

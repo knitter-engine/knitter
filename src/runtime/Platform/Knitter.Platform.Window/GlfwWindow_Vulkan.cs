@@ -30,7 +30,7 @@ public unsafe class GlfwWindow_Vulkan : Disposable, IWindow
         _glfw.MakeContextCurrent(_window);//must make immediately, or the GL may throw exception before call MakeContextCurrent
 
         _vk = Vk.GetApi();
-        GraphicsApiFactory.Vulkan = _vk;
+        GraphicsLibraryProvider.Vulkan = _vk;
 
         _glfw.SetWindowSize(_window, width, height);
         _glfw.SetWindowTitle(_window, title);

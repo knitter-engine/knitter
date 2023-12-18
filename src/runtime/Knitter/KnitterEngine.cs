@@ -2,11 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Silk.NET.OpenGL;
-using Silk.NET.GLFW;
-using Silk.NET.Windowing;
-using Knitter.Platform.Graphics.OpenGL;
 using Knitter.Platform.Window;
-using Knitter.Service.GUI.ImGUI;
 using Knitter.GameObjects;
 using Knitter.Utils;
 
@@ -43,8 +39,6 @@ public class KnitterEngine
         GL gl = window.GetGraphicsInterface();
         //ImGuiController _controller = new ImGuiController(gl, window);
 
-        RenderDemo renderDemo = new RenderDemo(gl);
-
         window.OnRenderUpdate += () =>
         {
            //_controller.Update(15);
@@ -52,14 +46,10 @@ public class KnitterEngine
             gl.ClearColor(0.05f, 0.05f, 0.05f, 1f);
             //gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit | ClearBufferMask.StencilBufferBit);
 
-            renderDemo.OnRender();
-
             ImGuiNET.ImGui.Text("123");
             ImGuiNET.ImGui.Button("456");
             //_controller.Render();
         };
-
-        window.OnClose += renderDemo.OnClose;
 
         while (!window.IsClosed)
         {

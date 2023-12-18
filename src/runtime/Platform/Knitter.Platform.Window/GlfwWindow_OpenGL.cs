@@ -1,5 +1,4 @@
 ﻿using Knitter.Common.Utils;
-using Knitter.Platform.Graphics;
 using Knitter.Platform.Graphics.Common;
 using Silk.NET.GLFW;
 using Silk.NET.OpenGL;
@@ -26,7 +25,7 @@ public unsafe class GlfwWindow_OpenGL : Disposable /*TODO:, IWindow*/
         _glfw.MakeContextCurrent(_window);//must make immediately, or the GL may throw exception before call MakeContextCurrent
 
         _gl = GL.GetApi(new GlfwContext(_glfw, _window));
-        GraphicsApiFactory.OpenGL = _gl;
+        GraphicsLibraryProvider.OpenGL = _gl;
 
         _glfw.SetWindowSize(_window, width, height);
         _glfw.SetWindowTitle(_window, title);
