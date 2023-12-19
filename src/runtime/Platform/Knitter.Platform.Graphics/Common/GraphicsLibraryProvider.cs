@@ -4,7 +4,7 @@ using Silk.NET.Vulkan;
 
 namespace Knitter.Platform.Graphics.Common;
 
-public static class GraphicsLibraryProvider
+internal static class GraphicsLibraryProvider
 {
     private static GL? _opengl;
     public static GL OpenGL
@@ -13,10 +13,5 @@ public static class GraphicsLibraryProvider
         get => _opengl ?? throw new NotInitializeException($"OpenGL is null. You should set before use.");
     }
 
-    private static Vk? _vulkan;
-    public static Vk Vulkan
-    {
-        set => _vulkan = value;
-        get => _vulkan ?? throw new NotInitializeException($"Vulkan is null. You should set before use.");
-    }
+    public static readonly Vk Vulkan = Vk.GetApi();
 }

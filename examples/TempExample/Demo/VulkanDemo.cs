@@ -2,7 +2,6 @@
 using Knitter.Platform.Window;
 using Silk.NET.Vulkan;
 using System.Diagnostics;
-using static Silk.NET.GLFW.GlfwCallbacks;
 
 namespace TempExample.Demo
 {
