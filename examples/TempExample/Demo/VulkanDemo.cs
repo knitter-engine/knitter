@@ -10,7 +10,7 @@ namespace TempExample.Demo
         public static void Run()
         {
             //Create a window.
-            IWindow window = new GlfwWindow_Vulkan(HelloTriangleApplication.WIDTH, HelloTriangleApplication.HEIGHT, "Vulkan");
+            IWindow window = WindowFactory.CreateWindows(800, 800, "Vulkan");
             var app = window.GetRhi();
 
             Stopwatch sw = new Stopwatch();
@@ -25,6 +25,7 @@ namespace TempExample.Demo
                 app.DrawFrame(sw.ElapsedMilliseconds / 1000);
                 window.Update(sw.ElapsedMilliseconds);
             }
+
             app.Dispose();
             window.Close();
         }

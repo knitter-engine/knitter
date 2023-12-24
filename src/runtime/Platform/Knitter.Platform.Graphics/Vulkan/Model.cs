@@ -1,79 +1,73 @@
 ﻿using Silk.NET.Assimp;
 using Silk.NET.Maths;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Knitter.Platform.Graphics.Vulkan
+namespace Knitter.Platform.Graphics.Vulkan;
+
+internal unsafe class Model
 {
-    internal unsafe class Model
+    public Vertex[]? vertices;
+    public uint[]? indices;
+
+    public Model(string modelPath)
     {
-        public Vertex[]? vertices;
-        public uint[]? indices;
+        using var assimp = Assimp.GetApi();
+        var scene = assimp.ImportFile(modelPath, (uint)PostProcessPreset.TargetRealTimeMaximumQuality);
 
-        public Model(string modelPath)
+        var vertexMap = new Dictionary<Vertex, uint>();
+        var vertices = new List<Vertex>();
+        var indices = new List<uint>();
+
+        VisitSceneNode(scene->MRootNode);
+
+        assimp.ReleaseImport(scene);
+
+        this.vertices = vertices.ToArray();
+        this.indices = indices.ToArray();
+
+        void VisitSceneNode(Node* node)
         {
-            using var assimp = Assimp.GetApi();
-            var scene = assimp.ImportFile(modelPath, (uint)PostProcessPreset.TargetRealTimeMaximumQuality);
-
-            var vertexMap = new Dictionary<Vertex, uint>();
-            var vertices = new List<Vertex>();
-            var indices = new List<uint>();
-
-            VisitSceneNode(scene->MRootNode);
-
-            assimp.ReleaseImport(scene);
-
-            this.vertices = vertices.ToArray();
-            this.indices = indices.ToArray();
-
-            void VisitSceneNode(Node* node)
+            for (int m = 0; m < node->MNumMeshes; m++)
             {
-                for (int m = 0; m < node->MNumMeshes; m++)
+                var mesh = scene->MMeshes[node->MMeshes[m]];
+
+                for (int f = 0; f < mesh->MNumFaces; f++)
                 {
-                    var mesh = scene->MMeshes[node->MMeshes[m]];
+                    var face = mesh->MFaces[f];
 
-                    for (int f = 0; f < mesh->MNumFaces; f++)
+                    for (int i = 0; i < face.MNumIndices; i++)
                     {
-                        var face = mesh->MFaces[f];
+                        uint index = face.MIndices[i];
 
-                        for (int i = 0; i < face.MNumIndices; i++)
+                        var position = mesh->MVertices[index];
+                        var texture = mesh->MTextureCoords[0][(int)index];
+
+                        Vertex vertex = new()
                         {
-                            uint index = face.MIndices[i];
+                            pos = new Vector3D<float>(position.X, position.Y, position.Z),
+                            color = new Vector3D<float>(1, 1, 1),
+                            //Flip Y for OBJ in Vulkan
+                            textCoord = new Vector2D<float>(texture.X, 1.0f - texture.Y)
+                        };
 
-                            var position = mesh->MVertices[index];
-                            var texture = mesh->MTextureCoords[0][(int)index];
-
-                            Vertex vertex = new()
-                            {
-                                pos = new Vector3D<float>(position.X, position.Y, position.Z),
-                                color = new Vector3D<float>(1, 1, 1),
-                                //Flip Y for OBJ in Vulkan
-                                textCoord = new Vector2D<float>(texture.X, 1.0f - texture.Y)
-                            };
-
-                            if (vertexMap.TryGetValue(vertex, out var meshIndex))
-                            {
-                                indices.Add(meshIndex);
-                            }
-                            else
-                            {
-                                indices.Add((uint)vertices.Count);
-                                vertexMap[vertex] = (uint)vertices.Count;
-                                vertices.Add(vertex);
-                            }
+                        if (vertexMap.TryGetValue(vertex, out var meshIndex))
+                        {
+                            indices.Add(meshIndex);
+                        }
+                        else
+                        {
+                            indices.Add((uint)vertices.Count);
+                            vertexMap[vertex] = (uint)vertices.Count;
+                            vertices.Add(vertex);
                         }
                     }
                 }
+            }
 
-                for (int c = 0; c < node->MNumChildren; c++)
-                {
-                    VisitSceneNode(node->MChildren[c]);
-                }
+            for (int c = 0; c < node->MNumChildren; c++)
+            {
+                VisitSceneNode(node->MChildren[c]);
             }
         }
-
     }
+
 }

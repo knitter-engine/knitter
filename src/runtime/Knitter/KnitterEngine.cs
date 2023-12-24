@@ -20,6 +20,8 @@ public class KnitterEngine
 
     public unsafe void Run()//TODO: avoid run twice
     {
+        throw new NotImplementedException();
+        /*
         Task.Factory.StartNew(() => {
             _canRun = true;
             while (_canRun)
@@ -58,7 +60,7 @@ public class KnitterEngine
         }
 
         window.Close();
-        window.Dispose();
+        window.Dispose();*/
     }
 
     public void Stop()

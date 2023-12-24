@@ -1,10 +1,4 @@
-﻿using Knitter.Platform.Graphics.Vulkan;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Knitter.Platform.Graphics;
 
 namespace Knitter.Platform.Window;
 
@@ -16,5 +10,5 @@ public interface IWindow
     public void GetWindowSize(out int width, out int height);
     public void Close();
 
-    public HelloTriangleApplication GetRhi();//TODO: return IRhi
+    public IRhi GetRhi();//TODO: return IRhi
 }

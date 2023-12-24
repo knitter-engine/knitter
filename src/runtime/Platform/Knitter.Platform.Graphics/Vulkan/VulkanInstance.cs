@@ -10,6 +10,7 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 using System.Diagnostics;
+using Silk.NET.Assimp;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 
@@ -38,11 +39,10 @@ struct UniformBufferObject
     public Matrix4X4<float> proj;
 }
 
-public unsafe class HelloTriangleApplication : IDisposable
+internal unsafe class VulkanInstance : IDisposable, IRhi
 {
-    //TODO: split width/height
-    public const int WIDTH = 800;
-    public const int HEIGHT = 800;
+    int _width;
+    int _height;
 
     const string MODEL_PATH = @"Assets\viking_room.obj";
     const string TEXTURE_PATH = @"Assets\viking_room.png";
@@ -64,7 +64,7 @@ public unsafe class HelloTriangleApplication : IDisposable
     public Vk? vk;
 
     private Instance instance;
-    public Instance GetInstance() { return instance; }
+    public Instance GetInstance() => instance;
 
     private ExtDebugUtils? debugUtils;
     private DebugUtilsMessengerEXT debugMessenger;
@@ -130,7 +130,7 @@ public unsafe class HelloTriangleApplication : IDisposable
 
     private Model? model;
 
-    public HelloTriangleApplication(uint glfwExtensionCount, byte** glfwExtensions)
+    public VulkanInstance(uint glfwExtensionCount, byte** glfwExtensions)
     {
         CreateInstance(glfwExtensionCount, glfwExtensions);
     }
@@ -146,13 +146,13 @@ public unsafe class HelloTriangleApplication : IDisposable
         frameBufferResized = true;
     }
 
-    public void InitVulkan()
+    public void InitVulkan(int width, int height)
     {
         SetupDebugMessenger();
         CreateSurface();
         PickPhysicalDevice();
         CreateLogicalDevice();
-        CreateSwapChain();
+        CreateSwapChain(width, height);
         CreateImageViews();
         CreateRenderPass();
         CreateDescriptorSetLayout();
@@ -254,7 +254,7 @@ public unsafe class HelloTriangleApplication : IDisposable
         vk!.Dispose();
     }
 
-    private void RecreateSwapChain()
+    private void RecreateSwapChain(int width, int height)
     {
         // TODO
         //Vector2D<int> framebufferSize = window!.FramebufferSize;
@@ -269,7 +269,7 @@ public unsafe class HelloTriangleApplication : IDisposable
 
         CleanUpSwapChain();
 
-        CreateSwapChain();
+        CreateSwapChain(width, height);
         CreateImageViews();
         CreateRenderPass();
         CreateGraphicsPipeline();
@@ -475,16 +475,18 @@ public unsafe class HelloTriangleApplication : IDisposable
         }
 
         SilkMarshal.Free((nint)createInfo.PpEnabledExtensionNames);
-
     }
 
-    private void CreateSwapChain()
+    private void CreateSwapChain(int width,int height)
     {
+        _width = width;
+        _height = height;
+
         var swapChainSupport = QuerySwapChainSupport(physicalDevice);
 
         var surfaceFormat = ChooseSwapSurfaceFormat(swapChainSupport.Formats);
         var presentMode = ChoosePresentMode(swapChainSupport.PresentModes);
-        var extent = ChooseSwapExtent(swapChainSupport.Capabilities);
+        var extent = ChooseSwapExtent(width, height, swapChainSupport.Capabilities);
 
         var imageCount = swapChainSupport.Capabilities.MinImageCount + 1;
         if (swapChainSupport.Capabilities.MaxImageCount > 0 && imageCount > swapChainSupport.Capabilities.MaxImageCount)
@@ -1728,7 +1730,7 @@ public unsafe class HelloTriangleApplication : IDisposable
 
     }
 
-    public void DrawFrame(double delta)
+    public void DrawFrame(float delta)
     {
         vk!.WaitForFences(device, 1, inFlightFences![currentFrame], true, ulong.MaxValue);
 
@@ -1737,7 +1739,7 @@ public unsafe class HelloTriangleApplication : IDisposable
 
         if (result == Result.ErrorOutOfDateKhr)
         {
-            RecreateSwapChain();
+            RecreateSwapChain(_width, _height);
             return;
         }
         else if (result != Result.Success && result != Result.SuboptimalKhr)
@@ -1806,7 +1808,7 @@ public unsafe class HelloTriangleApplication : IDisposable
         if (result == Result.ErrorOutOfDateKhr || result == Result.SuboptimalKhr || frameBufferResized)
         {
             frameBufferResized = false;
-            RecreateSwapChain();
+            RecreateSwapChain(_width, _height);
         }
         else if (result != Result.Success)
         {
@@ -1867,7 +1869,7 @@ public unsafe class HelloTriangleApplication : IDisposable
         return PresentModeKHR.FifoKhr;
     }
 
-    private Extent2D ChooseSwapExtent(SurfaceCapabilitiesKHR capabilities)
+    private Extent2D ChooseSwapExtent(int width, int height, SurfaceCapabilitiesKHR capabilities)
     {
         if (capabilities.CurrentExtent.Width != uint.MaxValue)
         {
@@ -1880,8 +1882,8 @@ public unsafe class HelloTriangleApplication : IDisposable
 
             Extent2D actualExtent = new()
             {
-                Width = (uint)WIDTH,
-                Height = (uint)HEIGHT
+                Width = (uint)width,
+                Height = (uint)height
             };
 
             actualExtent.Width = Math.Clamp(actualExtent.Width, capabilities.MinImageExtent.Width, capabilities.MaxImageExtent.Width);

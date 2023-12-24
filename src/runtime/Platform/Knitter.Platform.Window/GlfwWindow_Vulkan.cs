@@ -1,15 +1,15 @@
-﻿using Knitter.Common.Utils;
+﻿using Silk.NET.Core.Native;
+using Silk.NET.GLFW;
+using Silk.NET.Vulkan;
+
+using Knitter.Common.Utils;
+using Knitter.Platform.Graphics;
 using Knitter.Platform.Graphics.Common;
 using Knitter.Platform.Graphics.Vulkan;
-using Silk.NET.Core.Native;
-using Silk.NET.GLFW;
-using Silk.NET.SDL;
-using Silk.NET.Vulkan;
-using Silk.NET.Windowing;
 
 namespace Knitter.Platform.Window;
 
-public unsafe class GlfwWindow_Vulkan : Disposable, IWindow
+internal unsafe class GlfwWindow_Vulkan : Disposable, IWindow
 {
     public readonly Glfw _glfw;//TODO: not public for vulkan
     public  readonly WindowHandle* _window;//TODO: not public for vulkan
@@ -77,19 +77,20 @@ public unsafe class GlfwWindow_Vulkan : Disposable, IWindow
 
     public bool IsAlive => !_glfw.WindowShouldClose(_window);
 
-    public HelloTriangleApplication GetRhi()
+    public IRhi GetRhi()
     {
         var glfwExtensions = _glfw.GetRequiredInstanceExtensions(out uint glfwExtensionCount);
-        var app = new HelloTriangleApplication(glfwExtensionCount, glfwExtensions);
-        OnResize += app.FramebufferResizeCallback;
+        VulkanInstance rhi = new VulkanInstance(glfwExtensionCount, glfwExtensions);//TODO: use RhiFactory.CreateXXX
+        OnResize += rhi.FramebufferResizeCallback;
 
         VkNonDispatchableHandle handle = new();
-        _glfw.CreateWindowSurface(app.GetInstance().ToHandle(), _window, null, &handle);
+        _glfw.CreateWindowSurface(rhi.GetInstance().ToHandle(), _window, null, &handle);
 
-        app.CreateWindowSurface(handle);
-        app.InitVulkan();
+        rhi.CreateWindowSurface(handle);
+        GetWindowSize(out int width, out int height);
+        rhi.InitVulkan(width, height);
 
-        return app;
+        return rhi;
     }
 
 
