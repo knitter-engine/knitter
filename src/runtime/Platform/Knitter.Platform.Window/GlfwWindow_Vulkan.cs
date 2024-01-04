@@ -80,7 +80,7 @@ internal unsafe class GlfwWindow_Vulkan : Disposable, IWindow
     public IRhi GetRhi()
     {
         var glfwExtensions = _glfw.GetRequiredInstanceExtensions(out uint glfwExtensionCount);
-        VulkanInstance rhi = new VulkanInstance(glfwExtensionCount, glfwExtensions);//TODO: use RhiFactory.CreateXXX
+        Vulkan_Instance rhi = new Vulkan_Instance(glfwExtensionCount, glfwExtensions);//TODO: use RhiFactory.CreateXXX
         OnResize += rhi.FramebufferResizeCallback;
 
         VkNonDispatchableHandle handle = new();

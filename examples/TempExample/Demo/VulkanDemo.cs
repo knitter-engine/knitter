@@ -1,6 +1,6 @@
-﻿using Knitter.Platform.Graphics.Vulkan;
+﻿using Knitter.Common.Asset;
+using Knitter.Platform.Graphics;
 using Knitter.Platform.Window;
-using Silk.NET.Vulkan;
 using System.Diagnostics;
 
 namespace TempExample.Demo
@@ -9,9 +9,17 @@ namespace TempExample.Demo
     {
         public static void Run()
         {
+            Model model = new Model(@"Assets\viking_room.obj");
+            Vertex[] vertices = model.vertices!;
+            uint[] indices = model.indices!;
+
             //Create a window.
             IWindow window = WindowFactory.CreateWindows(800, 800, "Vulkan");
-            var app = window.GetRhi();
+            IRhi rhi = window.GetRhi();
+
+            rhi.CreateVertexBuffer(vertices);
+            rhi.CreateIndexBuffer(indices);
+            rhi.CreateCommandBuffers((uint)model!.indices!.Length);
 
             Stopwatch sw = new Stopwatch();
             sw.Start();
@@ -22,11 +30,11 @@ namespace TempExample.Demo
                 float deltaTime = (currentUpdateMilliseconds - lastUpdateMilliseconds) / 1000f;
 
                 lastUpdateMilliseconds = currentUpdateMilliseconds;
-                app.DrawFrame(sw.ElapsedMilliseconds / 1000);
+                rhi.DrawFrame(sw.ElapsedMilliseconds / 1000);
                 window.Update(sw.ElapsedMilliseconds);
             }
 
-            app.Dispose();
+            rhi.Dispose();
             window.Close();
         }
     }

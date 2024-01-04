@@ -17,6 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Common\Knitter.Common.Utils\Knitter.Common.Utils.csproj" />
+    <ProjectReference Include="..\..\Common\Knitter.Common\Knitter.Common.csproj" />
   </ItemGroup>
 
   <ItemGroup>

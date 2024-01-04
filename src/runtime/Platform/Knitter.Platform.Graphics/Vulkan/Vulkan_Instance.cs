@@ -11,6 +11,7 @@ using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 using System.Diagnostics;
 using Silk.NET.Assimp;
+using Knitter.Common.Asset;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 
@@ -39,12 +40,11 @@ struct UniformBufferObject
     public Matrix4X4<float> proj;
 }
 
-internal unsafe class VulkanInstance : IDisposable, IRhi
+internal unsafe class Vulkan_Instance : IDisposable, IRhi
 {
     int _width;
     int _height;
 
-    const string MODEL_PATH = @"Assets\viking_room.obj";
     const string TEXTURE_PATH = @"Assets\viking_room.png";
 
     const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -128,9 +128,9 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
 
     private bool frameBufferResized = false;
 
-    private Model? model;
+    private uint currentIndicesLength;
 
-    public VulkanInstance(uint glfwExtensionCount, byte** glfwExtensions)
+    public Vulkan_Instance(uint glfwExtensionCount, byte** glfwExtensions)
     {
         CreateInstance(glfwExtensionCount, glfwExtensions);
     }
@@ -164,13 +164,12 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
         CreateTextureImage();
         CreateTextureImageView();
         CreateTextureSampler();
-        this.model = new Model(MODEL_PATH);
-        CreateVertexBuffer();
-        CreateIndexBuffer();
+        //CreateVertexBuffer();
+        //CreateIndexBuffer();
         CreateUniformBuffers();
         CreateDescriptorPool();
         CreateDescriptorSets();
-        CreateCommandBuffers();
+        //CreateCommandBuffers();
         CreateSyncObjects();
     }
 
@@ -279,7 +278,7 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
         CreateUniformBuffers();
         CreateDescriptorPool();
         CreateDescriptorSets();
-        CreateCommandBuffers();
+        CreateCommandBuffers(currentIndicesLength);
 
         imagesInFlight = new Fence[swapChainImages!.Length];
     }
@@ -732,8 +731,8 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
             fragShaderStageInfo
         };
 
-        var bindingDescription = Vertex.GetBindingDescription();
-        var attributeDescriptions = Vertex.GetAttributeDescriptions();
+        var bindingDescription = Vulkan_Vertex.GetBindingDescription();
+        var attributeDescriptions = Vulkan_Vertex.GetAttributeDescriptions();
 
         fixed (VertexInputAttributeDescription* attributeDescriptionsPtr = attributeDescriptions)
         fixed (DescriptorSetLayout* descriptorSetLayoutPtr = &descriptorSetLayout)
@@ -1311,9 +1310,9 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
     }
 
 
-    private void CreateVertexBuffer()
+    public void CreateVertexBuffer(Vertex[] vertices)
     {
-        ulong bufferSize = (ulong)(Unsafe.SizeOf<Vertex>() * model!.vertices!.Length);
+        ulong bufferSize = (ulong)(Unsafe.SizeOf<Vertex>() * vertices!.Length);
 
         Buffer stagingBuffer = default;
         DeviceMemory stagingBufferMemory = default;
@@ -1321,7 +1320,7 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
 
         void* data;
         vk!.MapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        model!.vertices.AsSpan().CopyTo(new Span<Vertex>(data, model!.vertices.Length));
+        vertices.AsSpan().CopyTo(new Span<Vertex>(data, vertices.Length));
         vk!.UnmapMemory(device, stagingBufferMemory);
 
         CreateBuffer(bufferSize, BufferUsageFlags.TransferDstBit | BufferUsageFlags.VertexBufferBit, MemoryPropertyFlags.DeviceLocalBit, ref vertexBuffer, ref vertexBufferMemory);
@@ -1332,9 +1331,9 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
         vk!.FreeMemory(device, stagingBufferMemory, null);
     }
 
-    private void CreateIndexBuffer()
+    public void CreateIndexBuffer(uint[] indices)
     {
-        ulong bufferSize = (ulong)(Unsafe.SizeOf<uint>() * model!.indices!.Length);
+        ulong bufferSize = (ulong)(Unsafe.SizeOf<uint>() * indices.Length);
 
         Buffer stagingBuffer = default;
         DeviceMemory stagingBufferMemory = default;
@@ -1342,7 +1341,7 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
 
         void* data;
         vk!.MapMemory(device, stagingBufferMemory, 0, bufferSize, 0, &data);
-        model!.indices.AsSpan().CopyTo(new Span<uint>(data, model!.indices.Length));
+        indices.AsSpan().CopyTo(new Span<uint>(data, indices.Length));
         vk!.UnmapMemory(device, stagingBufferMemory);
 
         CreateBuffer(bufferSize, BufferUsageFlags.TransferDstBit | BufferUsageFlags.IndexBufferBit, MemoryPropertyFlags.DeviceLocalBit, ref indexBuffer, ref indexBufferMemory);
@@ -1586,8 +1585,9 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
         throw new Exception("failed to find suitable memory type!");
     }
 
-    private void CreateCommandBuffers()
+    public void CreateCommandBuffers(uint indicesLength)
     {
+        currentIndicesLength = indicesLength;
         commandBuffers = new CommandBuffer[swapChainFramebuffers!.Length];
 
         CommandBufferAllocateInfo allocInfo = new()
@@ -1667,7 +1667,7 @@ internal unsafe class VulkanInstance : IDisposable, IRhi
 
             vk!.CmdBindDescriptorSets(commandBuffers[i], PipelineBindPoint.Graphics, pipelineLayout, 0, 1, descriptorSets![i], 0, null);
 
-            vk!.CmdDrawIndexed(commandBuffers[i], (uint)model!.indices!.Length, 1, 0, 0, 0);
+            vk!.CmdDrawIndexed(commandBuffers[i], indicesLength, 1, 0, 0, 0);
 
             vk!.CmdEndRenderPass(commandBuffers[i]);
 
