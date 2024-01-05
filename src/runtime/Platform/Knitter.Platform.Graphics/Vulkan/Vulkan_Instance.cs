@@ -10,7 +10,6 @@ using Buffer = Silk.NET.Vulkan.Buffer;
 using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 using System.Diagnostics;
-using Silk.NET.Assimp;
 using Knitter.Common.Asset;
 
 namespace Knitter.Platform.Graphics.Vulkan;
@@ -44,8 +43,6 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
 {
     int _width;
     int _height;
-
-    const string TEXTURE_PATH = @"Assets\viking_room.png";
 
     const int MAX_FRAMES_IN_FLIGHT = 2;
 
@@ -161,16 +158,13 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
         CreateColorResources();
         CreateDepthResources();
         CreateFramebuffers();
-        CreateTextureImage();
-        CreateTextureImageView();
-        CreateTextureSampler();
-        //CreateVertexBuffer();
-        //CreateIndexBuffer();
+        CreateSyncObjects();
+    }
+    public void CreateUniformAndDescriptor()
+    {
         CreateUniformBuffers();
         CreateDescriptorPool();
         CreateDescriptorSets();
-        //CreateCommandBuffers();
-        CreateSyncObjects();
     }
 
     private void CleanUpSwapChain()
@@ -957,9 +951,16 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
         return FindSupportedFormat(new[] { Format.D32Sfloat, Format.D32SfloatS8Uint, Format.D24UnormS8Uint }, ImageTiling.Optimal, FormatFeatureFlags.DepthStencilAttachmentBit);
     }
 
-    private void CreateTextureImage()
+    public void CreateTexture(string texturePath)
     {
-        using var img = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(TEXTURE_PATH);
+        CreateTextureImage(texturePath);
+        CreateTextureImageView();
+        CreateTextureSampler();
+    }
+
+    private void CreateTextureImage(string texturePath)
+    {
+        using var img = SixLabors.ImageSharp.Image.Load<SixLabors.ImageSharp.PixelFormats.Rgba32>(texturePath);
 
         ulong imageSize = (ulong)(img.Width * img.Height * img.PixelType.BitsPerPixel / 8);
         mipLevels = (uint)(Math.Floor(Math.Log2(Math.Max(img.Width, img.Height))) + 1);

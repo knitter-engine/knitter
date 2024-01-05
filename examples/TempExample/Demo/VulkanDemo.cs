@@ -19,6 +19,8 @@ namespace TempExample.Demo
 
             rhi.CreateVertexBuffer(vertices);
             rhi.CreateIndexBuffer(indices);
+            rhi.CreateTexture(@"Assets\viking_room.png");
+            rhi.CreateUniformAndDescriptor();
             rhi.CreateCommandBuffers((uint)model!.indices!.Length);
 
             Stopwatch sw = new Stopwatch();
