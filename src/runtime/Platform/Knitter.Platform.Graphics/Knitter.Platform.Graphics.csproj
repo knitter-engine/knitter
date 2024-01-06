@@ -21,15 +21,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="Assets\texture.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\viking_room.obj">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Update="Assets\viking_room.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Update="shaders\frag.spv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

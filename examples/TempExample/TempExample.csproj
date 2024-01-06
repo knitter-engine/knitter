@@ -16,4 +16,16 @@
     <ProjectReference Include="..\..\src\runtime\Knitter\Knitter.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Assets\texture.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\viking_room.obj">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Assets\viking_room.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
