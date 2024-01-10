@@ -5,7 +5,7 @@ using Knitter.Common.Asset;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 
-public static class Vulkan_Vertex
+internal static class Vk_Vertex
 {
     public static VertexInputBindingDescription GetBindingDescription()
     {

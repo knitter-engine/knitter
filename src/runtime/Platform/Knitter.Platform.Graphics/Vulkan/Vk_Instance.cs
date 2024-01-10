@@ -39,7 +39,7 @@ struct UniformBufferObject
     public Matrix4X4<float> proj;
 }
 
-internal unsafe class Vulkan_Instance : IDisposable, IRhi
+internal unsafe class Vk_Instance : IDisposable, IRhi
 {
     int _width;
     int _height;
@@ -83,7 +83,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
     private ImageView[]? swapChainImageViews;
     private Framebuffer[]? swapChainFramebuffers;
 
-    private RenderPass renderPass;
+    private IRenderPass? renderPass;
     private DescriptorSetLayout descriptorSetLayout;
     private PipelineLayout pipelineLayout;
     private Pipeline graphicsPipeline;
@@ -127,7 +127,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
 
     private uint currentIndicesLength;
 
-    public Vulkan_Instance(uint glfwExtensionCount, byte** glfwExtensions)
+    public Vk_Instance(uint glfwExtensionCount, byte** glfwExtensions)
     {
         CreateInstance(glfwExtensionCount, glfwExtensions);
     }
@@ -189,7 +189,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
 
         vk!.DestroyPipeline(device, graphicsPipeline, null);
         vk!.DestroyPipelineLayout(device, pipelineLayout, null);
-        vk!.DestroyRenderPass(device, renderPass, null);
+        renderPass.Dispose();
 
         foreach (var imageView in swapChainImageViews!)
         {
@@ -649,7 +649,8 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
                 PDependencies = &dependency,
             };
 
-            if (vk!.CreateRenderPass(device, renderPassInfo, null, out renderPass) != Result.Success)
+            renderPass = Vk_RenderPass.Create(vk!, device, renderPassInfo);
+            if (renderPass == null)
             {
                 throw new Exception("failed to create render pass!");
             }
@@ -725,8 +726,8 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
             fragShaderStageInfo
         };
 
-        var bindingDescription = Vulkan_Vertex.GetBindingDescription();
-        var attributeDescriptions = Vulkan_Vertex.GetAttributeDescriptions();
+        var bindingDescription = Vk_Vertex.GetBindingDescription();
+        var attributeDescriptions = Vk_Vertex.GetAttributeDescriptions();
 
         fixed (VertexInputAttributeDescription* attributeDescriptionsPtr = attributeDescriptions)
         fixed (DescriptorSetLayout* descriptorSetLayoutPtr = &descriptorSetLayout)
@@ -848,7 +849,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
                 PDepthStencilState = &depthStencil,
                 PColorBlendState = &colorBlending,
                 Layout = pipelineLayout,
-                RenderPass = renderPass,
+                RenderPass = renderPass.GetHandle(),
                 Subpass = 0,
                 BasePipelineHandle = default
             };
@@ -879,7 +880,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
                 FramebufferCreateInfo framebufferInfo = new()
                 {
                     SType = StructureType.FramebufferCreateInfo,
-                    RenderPass = renderPass,
+                    RenderPass = renderPass.GetHandle(),
                     AttachmentCount = (uint)attachments.Length,
                     PAttachments = attachmentsPtr,
                     Width = swapChainExtent.Width,
@@ -1623,7 +1624,7 @@ internal unsafe class Vulkan_Instance : IDisposable, IRhi
             RenderPassBeginInfo renderPassInfo = new()
             {
                 SType = StructureType.RenderPassBeginInfo,
-                RenderPass = renderPass,
+                RenderPass = renderPass.GetHandle(),
                 Framebuffer = swapChainFramebuffers[i],
                 RenderArea =
                 {
