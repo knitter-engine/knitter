@@ -4,7 +4,6 @@ using Silk.NET.Vulkan;
 
 using Knitter.Common.Utils;
 using Knitter.Platform.Graphics;
-using Knitter.Platform.Graphics.Common;
 using Knitter.Platform.Graphics.Vulkan;
 
 namespace Knitter.Platform.Window;

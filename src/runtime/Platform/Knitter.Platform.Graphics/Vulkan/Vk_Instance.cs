@@ -11,6 +11,7 @@ using Image = Silk.NET.Vulkan.Image;
 using Semaphore = Silk.NET.Vulkan.Semaphore;
 using System.Diagnostics;
 using Knitter.Common.Asset;
+using Knitter.Platform.Graphics;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 

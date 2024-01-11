@@ -2,7 +2,7 @@
 using Silk.NET.OpenGL;
 using Silk.NET.Vulkan;
 
-namespace Knitter.Platform.Graphics.Common;
+namespace Knitter.Platform.Graphics;
 
 internal static class GraphicsLibraryProvider
 {

@@ -1,4 +1,5 @@
-﻿using Silk.NET.Vulkan;
+﻿using Knitter.Platform.Graphics;
+using Silk.NET.Vulkan;
 
 namespace Knitter.Platform.Graphics.Vulkan;
 
